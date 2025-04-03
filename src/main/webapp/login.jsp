@@ -13,9 +13,11 @@
   <body>
     <h1>Please log in</h1>
     <%
+      // Check if the client has sent incorrect login details
       Object badLoginObj = session.getAttribute("badLogin");
       if (badLoginObj != null) {
         boolean badLogin = (boolean) badLoginObj;
+        // Display an error message if so
         if (badLogin) {
     %><p style="color: red;">Incorrect login details. Please try again.</p><%
         }

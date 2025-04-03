@@ -13,8 +13,10 @@
     <body>
         <h1>Register new user</h1>
         <%
+            // Check if the client has attempted to register under a username that already exists
             Object userExistsObj = session.getAttribute("userExists");
             if (userExistsObj != null) {
+                // Display an error message if so
         %><p style="color: red;">This username is already in use! Please pick a different one.</p><%
             }
         %>

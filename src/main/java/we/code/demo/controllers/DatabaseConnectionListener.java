@@ -9,6 +9,7 @@ import jakarta.servlet.annotation.WebListener;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+// This is unused at the moment.
 //@WebListener
 public class DatabaseConnectionListener implements ServletContextListener {
     private HikariDataSource dataSource;
