@@ -25,5 +25,6 @@
             <input type="password" id="password" name="password" required><br>
             <input type="submit" value="Register">
         </form>
+        <a href="index.jsp">Go back</a>
     </body>
 </html>

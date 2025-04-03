@@ -28,5 +28,6 @@
       <input type="password" id="password" name="password" required><br>
       <input type="submit" value="Log In">
     </form>
+    <a href="index.jsp">Go back</a>
   </body>
 </html>
