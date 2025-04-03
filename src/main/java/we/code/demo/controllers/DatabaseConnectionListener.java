@@ -1,4 +1,4 @@
-package we.code.demo.servlets;
+package we.code.demo.controllers;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -9,7 +9,7 @@ import jakarta.servlet.annotation.WebListener;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-@WebListener
+//@WebListener
 public class DatabaseConnectionListener implements ServletContextListener {
     private HikariDataSource dataSource;
 
@@ -21,7 +21,7 @@ public class DatabaseConnectionListener implements ServletContextListener {
         try(Connection connection = dataSource.getConnection()) {
             System.out.println("Database connection established");
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Failed to establish database connection");
         }
     }
 
@@ -29,7 +29,7 @@ public class DatabaseConnectionListener implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent sce) {
         if (dataSource != null) {
             dataSource.close();
+            System.out.println("Database connection closed");
         }
-        System.out.println("Database connection closed");
     }
 }
