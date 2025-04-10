@@ -10,8 +10,10 @@ public class User {
     @Setter Contact contact;
     @Setter Address address;
 
-    public User(String username, String password) {
+    public User(String username, String password, Contact contact, Address address) {
         this.username = username;
         this.password = password;
+        this.contact = contact;
+        this.address = address;
     }
 }
