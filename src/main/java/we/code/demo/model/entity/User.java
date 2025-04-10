@@ -1,4 +1,4 @@
-package we.code.demo.models;
+package we.code.demo.model.entity;
 
 import lombok.Getter;
 import lombok.Setter;

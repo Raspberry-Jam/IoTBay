@@ -1,10 +1,9 @@
-package we.code.demo.controllers;
+package we.code.demo.controller;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
-import jakarta.servlet.annotation.WebListener;
 
 import java.sql.Connection;
 import java.sql.SQLException;

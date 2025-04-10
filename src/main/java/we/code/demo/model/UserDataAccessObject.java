@@ -1,6 +1,7 @@
-package we.code.demo.models;
+package we.code.demo.model;
 
 import lombok.Getter;
+import we.code.demo.model.entity.User;
 
 import java.util.ArrayList;
 import java.util.List;
