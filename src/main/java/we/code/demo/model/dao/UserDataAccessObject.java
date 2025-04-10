@@ -1,4 +1,4 @@
-package we.code.demo.model;
+package we.code.demo.model.dao;
 
 import lombok.Getter;
 import we.code.demo.model.entity.User;

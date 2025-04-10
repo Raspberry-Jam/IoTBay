@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import we.code.demo.model.entity.User;
-import we.code.demo.model.UserDataAccessObject;
+import we.code.demo.model.dao.UserDataAccessObject;
 
 import java.io.IOException;
 import java.util.List;
