@@ -2,6 +2,7 @@ package we.code.demo.controller;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -9,6 +10,7 @@ import we.code.demo.model.entity.User;
 import we.code.demo.model.dao.UserDataAccessObject;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 // Create an API endpoint for handling user authentication
@@ -34,8 +36,14 @@ public class AuthenticateServlet extends HttpServlet {
             for (User user : users) { // Loop over all users in the in-memory data store
                 if (username.equals(user.getUsername()) && password.equals(user.getPassword())) { // Check if the details match
                     String sessionToken = java.util.UUID.randomUUID().toString(); // Create a unique session token
-                    // TODO: Store session token in browser cookie
-                    req.getSession().setAttribute("sessionToken", sessionToken); // Pass the session token along to the client
+                    Cookie sessionTokenCookie = new Cookie("sessionToken", sessionToken.toString());
+                    int maxAgeMinutes = 60*60*24*3; // 3 days
+                    LocalDateTime sessionTokenExpiry = LocalDateTime.now().plusMinutes(maxAgeMinutes);
+                    user.setSessionToken(sessionToken);
+                    user.setSessionExpiry(sessionTokenExpiry);
+                    sessionTokenCookie.setMaxAge(maxAgeMinutes);
+                    resp.addCookie(sessionTokenCookie);
+                    req.getSession().setAttribute("sessionToken", sessionToken.toString()); // Pass the session token along to the client
                     resp.sendRedirect("welcome.jsp"); // Send the client to the landing page
                     return;
                 }
