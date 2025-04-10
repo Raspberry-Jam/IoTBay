@@ -5,6 +5,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import we.code.demo.model.entity.Address;
+import we.code.demo.model.entity.Contact;
 import we.code.demo.model.entity.User;
 import we.code.demo.model.dao.UserDataAccessObject;
 
@@ -26,11 +28,44 @@ public class RegisterServlet extends HttpServlet {
         // Pull the user attributes from the request data
         String username = req.getParameter("username");
         String password = req.getParameter("password");
+        String givenName = req.getParameter("firstName");
+        String surname = req.getParameter("surname");
+        String phoneNumber = req.getParameter("phoneNumber");
+        String email = req.getParameter("email");
+        String streetLine1 = req.getParameter("streetLine1");
+        String streetLine2 = req.getParameter("streetLine2");
+        String suburb = req.getParameter("suburb");
+        String postcode = req.getParameter("postcode");
+        String stateString = req.getParameter("state");
+
+        boolean doAddress = false;
 
         // Check if the request is malformed, and send client to error page if it is
-        if (username == null || password == null) {
+        if (username == null || password == null || givenName == null) {
             resp.sendRedirect("/error.jsp");
             return;
+        }
+
+        // Check if the stateString is a legal value
+        if (stateString != null) {
+            try {
+                Address.State.valueOf(stateString);
+            } catch (IllegalArgumentException e) {
+                resp.sendRedirect("/error.jsp");
+                return;
+            }
+        }
+
+        // Check if the user has an incomplete Address section
+        // Checking if any of the lines are null
+        if (streetLine1 == null || streetLine2 == null || suburb == null || postcode == null || stateString == null) {
+            if (streetLine1 != null || streetLine2 != null || suburb != null || postcode != null || stateString != null) {
+                req.setAttribute("incompleteAddress", true);
+                req.getRequestDispatcher("/register.jsp").forward(req, resp);
+                return;
+            }
+        } else {
+            doAddress = true;
         }
 
         // Check if the username is already being used, and inform the client if it is
@@ -46,8 +81,10 @@ public class RegisterServlet extends HttpServlet {
         // to the login page through the thanks-register.jsp page.
         req.getSession().setAttribute("badLogin", null);
 
-        // Create a new User object with the validated data
-        User newUser = new User(username, password, null, null);
+        // Construct user data into POJOs (plain old java objects) for serialisation and storage
+        Contact contact = new Contact(givenName, surname, phoneNumber, email);
+        Address address = doAddress ? new Address(streetLine1, streetLine2, suburb, Address.State.valueOf(stateString), postcode) : null;
+        User newUser = new User(username, password, contact, address);
 
         // Add the new User object to the persistent in-memory storage
         UserDataAccessObject.saveUser(newUser);
