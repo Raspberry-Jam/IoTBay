@@ -28,7 +28,7 @@ public class RegisterServlet extends HttpServlet {
         // Pull the user attributes from the request data
         String username = req.getParameter("username");
         String password = req.getParameter("password");
-        String givenName = req.getParameter("firstName");
+        String givenName = req.getParameter("givenName");
         String surname = req.getParameter("surname");
         String phoneNumber = req.getParameter("phoneNumber");
         String email = req.getParameter("email");
@@ -42,6 +42,7 @@ public class RegisterServlet extends HttpServlet {
 
         // Check if the request is malformed, and send client to error page if it is
         if (username == null || password == null || givenName == null) {
+            System.err.println("Malformed request, missing required fields");
             resp.sendRedirect("/error.jsp");
             return;
         }
@@ -51,6 +52,7 @@ public class RegisterServlet extends HttpServlet {
             try {
                 Address.State.valueOf(stateString);
             } catch (IllegalArgumentException e) {
+                e.printStackTrace();
                 resp.sendRedirect("/error.jsp");
                 return;
             }
@@ -90,6 +92,7 @@ public class RegisterServlet extends HttpServlet {
         UserDataAccessObject.saveUser(newUser);
 
         // Send the client to the register landing page
+        req.getSession().setAttribute("username", username);
         resp.sendRedirect("thanks-register.jsp");
     }
 }
