@@ -47,7 +47,7 @@ public class RegisterServlet extends HttpServlet {
         req.getSession().setAttribute("badLogin", null);
 
         // Create a new User object with the validated data
-        User newUser = new User(username, password);
+        User newUser = new User(username, password, null, null);
 
         // Add the new User object to the persistent in-memory storage
         UserDataAccessObject.saveUser(newUser);
