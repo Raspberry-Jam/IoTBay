@@ -20,7 +20,8 @@ public class RegisterServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // If the session had a userExists triggered previously, and comes back to this page later,
         // it will incorrectly display an error message that is not relevant anymore.
-        req.setAttribute("userExists", null);
+        req.getSession().setAttribute("userExists", null);
+        req.getSession().setAttribute("incompleteAddress", null);
 
         // Get the current in-memory list of users
         List<User> users = UserDataAccessObject.getUsers();
@@ -59,15 +60,12 @@ public class RegisterServlet extends HttpServlet {
         }
 
         // Check if the user has an incomplete Address section
-        // Checking if any of the lines are null
-        if (streetLine1 == null || streetLine2 == null || suburb == null || postcode == null || stateString == null) {
-            if (streetLine1 != null || streetLine2 != null || suburb != null || postcode != null || stateString != null) {
-                req.setAttribute("incompleteAddress", true);
-                req.getRequestDispatcher("/register.jsp").forward(req, resp);
-                return;
-            }
-        } else {
-            doAddress = true;
+        int validAddress = validateAddress(streetLine1, streetLine2, suburb, stateString, postcode);
+        if (validAddress == 0) doAddress = true;
+        if (validAddress == 2) {
+            req.getSession().setAttribute("incompleteAddress", true);
+            req.getRequestDispatcher("/register.jsp").forward(req, resp);
+            return;
         }
 
         // Check if the username is already being used, and inform the client if it is
@@ -94,5 +92,29 @@ public class RegisterServlet extends HttpServlet {
         // Send the client to the register landing page
         req.getSession().setAttribute("username", username);
         resp.sendRedirect("thanks-register.jsp");
+    }
+
+    // TODO: Make this better. This is awful and I hate it.
+    private int validateAddress(String streetLine1, String streetLine2, String suburb, String state, String postcode) {
+        // 0 = Valid Address
+        // 1 = Empty Address
+        // 2 = Invalid Address
+
+        // Check if the state string is a valid enum type
+        try {
+            Address.State.valueOf(state);
+        } catch (IllegalArgumentException e) {
+            return 2;
+        }
+
+        // Check if any of the strings are empty
+        if (streetLine1.isEmpty() || streetLine2.isEmpty() || suburb.isEmpty() || postcode.isEmpty()) {
+            // Check if any of the other strings have values (if so, invalid address)
+            if (!streetLine1.isEmpty() || !streetLine2.isEmpty() || !suburb.isEmpty() || !postcode.isEmpty()) {
+                return 2;
+            }
+            return 1;
+        }
+        return 0;
     }
 }
