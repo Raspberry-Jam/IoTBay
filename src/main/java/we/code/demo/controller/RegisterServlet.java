@@ -52,7 +52,7 @@ public class RegisterServlet extends HttpServlet {
             try {
                 Address.State.valueOf(stateString);
             } catch (IllegalArgumentException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
                 resp.sendRedirect("/error.jsp");
                 return;
             }
