@@ -89,7 +89,7 @@ public class RegisterServlet extends HttpServlet {
         User newUser = new User(username, password, contact, address);
 
         // Add the new User object to the persistent in-memory storage
-        UserDataAccessObject.saveUser(newUser);
+        UserDataAccessObject.addUser(newUser);
 
         // Send the client to the register landing page
         req.getSession().setAttribute("username", username);

@@ -9,7 +9,7 @@ import java.util.List;
 public class UserDataAccessObject {
     @Getter private static List<User> users = new ArrayList<>();
 
-    public static void saveUser(User user) {
+    public static void addUser(User user) {
         users.add(user);
     }
 }
