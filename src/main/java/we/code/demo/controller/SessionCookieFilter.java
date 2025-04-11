@@ -13,7 +13,7 @@ import java.util.List;
 
 // TODO: Change session state to be decoupled from user login, allowing anonymous users to retain application state
 @WebFilter("/*")
-public class SessionCookieServlet implements Filter {
+public class SessionCookieFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) servletRequest;
