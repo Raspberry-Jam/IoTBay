@@ -43,7 +43,7 @@ public class AuthenticateServlet extends HttpServlet {
                     user.setSessionExpiry(sessionTokenExpiry);
                     sessionTokenCookie.setMaxAge(maxAgeMinutes);
                     resp.addCookie(sessionTokenCookie);
-                    req.getSession().setAttribute("sessionToken", sessionToken.toString()); // Pass the session token along to the client
+                    req.getSession().setAttribute("sessionUser", user); // Pass the session token along to the client
                     resp.sendRedirect("welcome.jsp"); // Send the client to the landing page
                     return;
                 }

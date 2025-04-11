@@ -61,7 +61,7 @@ public class SessionCookieFilter implements Filter {
             return;
         }
 
-        req.getSession().setAttribute("sessionToken", user.getSessionToken());
+        req.getSession().setAttribute("sessionUser", user);
         chain.doFilter(req, resp);
     }
 }
