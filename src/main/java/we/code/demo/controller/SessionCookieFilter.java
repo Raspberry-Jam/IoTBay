@@ -48,7 +48,7 @@ public class SessionCookieFilter implements Filter {
         User user = null;
 
         for (User u : users) {
-            if (u.getSessionToken().toString().equals(sessionCookie.getValue())) {
+            if (u.getSessionToken().equals(sessionCookie.getValue())) {
                 user = u;
             }
         }
