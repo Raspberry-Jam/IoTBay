@@ -5,7 +5,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import we.code.demo.model.dao.UserDataAccessObject;
 import we.code.demo.model.entity.Address;
 import we.code.demo.model.entity.Contact;
 import we.code.demo.model.entity.User;
@@ -18,8 +17,6 @@ public class UserEditServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.getSession().setAttribute("incompleteAddress", null);
-
-        List<User> users = UserDataAccessObject.getUsers();
 
         String password = req.getParameter("password");
         String givenName = req.getParameter("givenName");
