@@ -10,7 +10,6 @@ import we.code.demo.model.entity.Contact;
 import we.code.demo.model.entity.User;
 
 import java.io.IOException;
-import java.util.List;
 
 @WebServlet(name = "userEditServlet", value = "/userEdit")
 public class UserEditServlet extends HttpServlet {
