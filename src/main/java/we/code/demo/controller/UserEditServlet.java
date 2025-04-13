@@ -62,9 +62,9 @@ public class UserEditServlet extends HttpServlet {
 
         User user = (User) req.getSession().getAttribute("sessionUser");
 
-        user.setPassword(password);
-        user.setContact(contact);
-        user.setAddress(address);
+        if (doPassword) user.setPassword(password);
+        if (doContact) user.setContact(contact);
+        if (doAddress) user.setAddress(address);
 
         resp.sendRedirect("/user-edit-success.jsp");
     }
