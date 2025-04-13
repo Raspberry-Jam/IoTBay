@@ -13,8 +13,8 @@ import we.code.demo.model.entity.User;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(name = "editUserServlet", value = "/editUser")
-public class EditUserServlet extends HttpServlet {
+@WebServlet(name = "userEditServlet", value = "/userEdit")
+public class UserEditServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.getSession().setAttribute("incompleteAddress", null);
@@ -66,6 +66,6 @@ public class EditUserServlet extends HttpServlet {
         user.setContact(contact);
         user.setAddress(address);
 
-        resp.sendRedirect("/edit-user-success.jsp");
+        resp.sendRedirect("/user-edit-success.jsp");
     }
 }

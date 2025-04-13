@@ -7,7 +7,6 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="we.code.demo.model.entity.User" %>
-<%@ page import="we.code.demo.model.entity.Address" %>
 
 <%
     User user = (User) session.getAttribute("sessionUser");
@@ -19,7 +18,7 @@
 </head>
 <body>
     <h1>Edit details for <%=user.getUsername()%></h1>
-    <form action="editUser" method="post">
+    <form action="userEdit" method="post">
         <h3>Change Password</h3>
         <label for="password">Password:</label>
         <input type="password" id="password" name="password"><br>
