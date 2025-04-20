@@ -1,21 +1,24 @@
 using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
 using IoTBay.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace IoTBay.Controllers;
 
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
+    private readonly AppDbContext _db;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(ILogger<HomeController> logger, AppDbContext db)
     {
         _logger = logger;
+        _db = db;
     }
 
     public IActionResult Index()
     {
-        return View();
+        var data = _db.Users.ToList();
+        return View(data);
     }
 
     public IActionResult Privacy()
