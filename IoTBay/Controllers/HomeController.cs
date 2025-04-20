@@ -17,7 +17,7 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        var data = _db.Users.ToList();
+        var data = _db.Addresses.ToList();
         return View(data);
     }
 
