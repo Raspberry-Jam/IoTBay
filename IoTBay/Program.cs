@@ -1,4 +1,5 @@
-using Npgsql;
+using IoTBay.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace IoTBay;
 
@@ -10,8 +11,8 @@ public class Program
 
         // Add services to the container.
         builder.Services.AddControllersWithViews();
-        Console.WriteLine("Test!");
-        Console.WriteLine("Test 2!");
+        builder.Services.AddDbContext<AppDbContext>(options =>
+            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
         var app = builder.Build();
 
