@@ -16,6 +16,30 @@ public class Program
 
         var app = builder.Build();
 
+        using (var scope = app.Services.CreateScope())
+        {
+            var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            if (!ctx.Addresses.Any())
+            {
+                ctx.Addresses.Add(new Address
+                {
+                    StreetLine1 = "123 Test Street",
+                    Suburb = "Springfield",
+                    State = State.ACT,
+                    Postcode = "1234"
+                });
+                ctx.Addresses.Add(new Address
+                {
+                    StreetLine1 = "245 Bug Blvd",
+                    StreetLine2 = "Unit 87",
+                    Suburb = "Woodland",
+                    State = State.NSW,
+                    Postcode = "8823"
+                });
+                ctx.SaveChanges();
+            }
+        }
+
         // Configure the HTTP request pipeline.
         if (!app.Environment.IsDevelopment())
         {
