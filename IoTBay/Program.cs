@@ -12,7 +12,7 @@ public class Program
         // Add services to the container.
         builder.Services.AddControllersWithViews();
         builder.Services.AddDbContext<AppDbContext>(options =>
-            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+            options.UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING")));
 
         var app = builder.Build();
 

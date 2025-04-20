@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace IoTBay.Models;
 
@@ -43,12 +41,7 @@ public partial class AppDbContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(AppContext.BaseDirectory)
-                .AddJsonFile("appsettings.json")
-                .Build();
-
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
             optionsBuilder.UseNpgsql(connectionString);
         }
     }
