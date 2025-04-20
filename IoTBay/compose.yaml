@@ -9,6 +9,8 @@
       - "5432:5432"
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - iotnet
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U iotbay -d iotbaydb"]
       interval: 5s
@@ -32,3 +34,8 @@
       - .:/app
     ports:
       - "8080:8080"
+    networks:
+      - iotnet
+
+networks:
+  iotnet:
