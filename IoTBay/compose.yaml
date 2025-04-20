@@ -1,0 +1,33 @@
+﻿services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: iotbay
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: iotbaydb
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U iotbay -d iotbaydb"]
+      interval: 5s
+      retries: 5
+  
+  iotbay:
+    depends_on:
+      db:
+        condition: service_healthy
+    build:
+      context: .
+      target: dev
+    environment:
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DOTNET_RUNNING_IN_CONTAINER=true
+      - DOTNET_DEBUG=1
+      - DOTNET_WATCH=1
+    volumes:
+      - .:/app
+    ports:
+      - "8080:8080"

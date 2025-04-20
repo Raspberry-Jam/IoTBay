@@ -1,4 +1,6 @@
 .idea/
-target/
-.mvn/
-mvnw*
+IoTBay/bin/
+IoTBay/obj/
+
+*.log
+*.tmp
