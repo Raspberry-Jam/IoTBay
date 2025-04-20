@@ -1,7 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IoTBay.Models;
+
+public enum State
+{
+    ACT, NSW, NT, QLD, SA, TAS, VIC, WA
+}
 
 public partial class Address
 {
@@ -12,6 +16,9 @@ public partial class Address
     public string? StreetLine2 { get; set; }
 
     public string? Suburb { get; set; }
+    
+    [Column("state", TypeName = "state_enum")] // PostgreSQL enum type
+    public State? State { get; set; }
 
     public string? Postcode { get; set; }
 

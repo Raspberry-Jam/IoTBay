@@ -48,9 +48,13 @@ public partial class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder
+        /*modelBuilder
             .HasPostgresEnum("permission_enum", new[] { "clerk", "manager", "admin" })
-            .HasPostgresEnum("state_enum", new[] { "ACT", "NSW", "NT", "QLD", "SA", "TAS", "VIC", "WA" });
+            .HasPostgresEnum("state_enum", new[] { "ACT", "NSW", "NT", "QLD", "SA", "TAS", "VIC", "WA" });*/
+
+        modelBuilder
+            .HasPostgresEnum<Permission>()
+            .HasPostgresEnum<State>();
 
         modelBuilder.Entity<Address>(entity =>
         {
@@ -72,6 +76,14 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Suburb)
                 .HasMaxLength(128)
                 .HasColumnName("suburb");
+            entity.Property(e => e.State)
+                .HasConversion(
+                    // Disable dereference possible nullable warning because ReSharper
+                    // is too stupid to see ternary statements apparently
+                    #pragma warning disable CS8602
+                    s => s == null ? null : s.ToString().ToLower(),
+                    s => s == null ? null : Enum.Parse<State>(s, true));
+                    #pragma warning enable CS8602
         });
 
         modelBuilder.Entity<Cart>(entity =>
@@ -236,6 +248,11 @@ public partial class AppDbContext : DbContext
 
             entity.Property(e => e.StaffId).HasColumnName("staff_id");
             entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.Property(e => e.Permission)
+                .HasConversion(
+                    p => p.ToString().ToLower(),
+                    p => Enum.Parse<Permission>(p, true));
 
             entity.HasOne(d => d.User).WithOne(p => p.Staff)
                 .HasForeignKey<Staff>(d => d.UserId)
