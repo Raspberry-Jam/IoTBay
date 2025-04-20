@@ -2,7 +2,31 @@
     ViewData["Title"] = "Home Page";
 }
 
+@model List<Address>
+
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Street Line 1</th>
+            <th>Street Line 2</th>
+            <th>Suburb</th>
+            <th>State</th>
+            <th>Postcode</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var address in Model)
+        {
+            <tr>
+                <td>@address.StreetLine1</td>
+                <td>@address.StreetLine2</td>
+                <td>@address.Suburb</td>
+                <td>@address.State</td>
+                <td>@address.Postcode</td>
+            </tr>
+        }
+        </tbody>
+    </table>
 </div>
