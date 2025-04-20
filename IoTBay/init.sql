@@ -13,7 +13,7 @@ CREATE TABLE contacts
 );
 
 DROP TYPE IF EXISTS state_enum CASCADE;
-CREATE TYPE state_enum AS ENUM ('ACT', 'NSW', 'NT', 'QLD', 'SA', 'TAS', 'VIC', 'WA');
+CREATE TYPE state_enum AS ENUM ('act', 'nsw', 'nt', 'qld', 'sa', 'tas', 'vic', 'wa');
 
 DROP TABLE IF EXISTS addresses CASCADE;
 CREATE TABLE addresses
