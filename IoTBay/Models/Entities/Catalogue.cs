@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace IoTBay.Models;
+﻿namespace IoTBay.Models.Entities;
 
 public partial class Catalogue
 {

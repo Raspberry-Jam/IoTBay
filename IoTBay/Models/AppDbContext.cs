@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using IoTBay.Models.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace IoTBay.Models;
 

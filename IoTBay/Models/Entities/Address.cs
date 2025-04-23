@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace IoTBay.Models;
+namespace IoTBay.Models.Entities;
 
 public enum State
 {
