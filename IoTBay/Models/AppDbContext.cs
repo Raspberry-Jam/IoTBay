@@ -49,14 +49,6 @@ public partial class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder
-            .HasPostgresEnum("permission_enum", new[] { "clerk", "manager", "admin" })
-            .HasPostgresEnum("state_enum", new[] { "act", "nsw", "nt", "qld", "sa", "tas", "vic", "wa" });
-
-        modelBuilder
-            .HasPostgresEnum<Permission>()
-            .HasPostgresEnum<State>();
-
         modelBuilder.Entity<Address>(entity =>
         {
             entity.HasKey(e => e.AddressId).HasName("addresses_pkey");
@@ -82,9 +74,9 @@ public partial class AppDbContext : DbContext
                     // Disable dereference possible nullable warning because ReSharper
                     // is too stupid to see ternary statements apparently
                     #pragma warning disable CS8602
-                    s => s == null ? null : $"{s.ToString().ToLower()}::state_enum", // Enforce PostgreSQL type check
-                    s => s == null ? null : Enum.Parse<State>(s.Replace("::state_enum", ""), true));
-                    #pragma warning enable CS8602
+                    s => s == null ? null : s.ToString().ToLower(), // Enforce PostgreSQL type check
+                    s => s == null ? null : Enum.Parse<State>(s, true));
+                    #pragma warning restore CS8602
         });
 
         modelBuilder.Entity<Cart>(entity =>
@@ -252,8 +244,9 @@ public partial class AppDbContext : DbContext
 
             entity.Property(e => e.Permission)
                 .HasConversion(
-                    p => $"{p.ToString().ToLower()}::permission_enum", // Enforce PostgreSQL type check
-                    p => Enum.Parse<Permission>(p.Replace("::permission_enum", ""), true));
+                    p => p.ToString().ToLower(),
+                    p => Enum.Parse<Permission>(p, true)
+                );
 
             entity.HasOne(d => d.User).WithOne(p => p.Staff)
                 .HasForeignKey<Staff>(d => d.UserId)

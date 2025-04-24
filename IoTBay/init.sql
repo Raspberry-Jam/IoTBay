@@ -12,8 +12,9 @@ CREATE TABLE contacts
     phone_number VARCHAR(10)
 );
 
-DROP TYPE IF EXISTS state_enum CASCADE;
-CREATE TYPE state_enum AS ENUM ('act', 'nsw', 'nt', 'qld', 'sa', 'tas', 'vic', 'wa');
+-- Custom enum types are a pain in the ass to handle with EF, so we're going to varchar now (24/4)
+/*DROP TYPE IF EXISTS state_enum CASCADE;
+CREATE TYPE state_enum AS ENUM ('act', 'nsw', 'nt', 'qld', 'sa', 'tas', 'vic', 'wa');*/
 
 DROP TABLE IF EXISTS addresses CASCADE;
 CREATE TABLE addresses
@@ -22,7 +23,7 @@ CREATE TABLE addresses
     street_line_1 VARCHAR(128),
     street_line_2 VARCHAR(128),
     suburb        VARCHAR(128),
-    state         state_enum,
+    state         VARCHAR(16),
     postcode      CHAR(4),
     CONSTRAINT check_address_is_valid_or_null CHECK (
         -- Check that if any of the fields are filled, then all required ones are filled.
@@ -48,15 +49,15 @@ CREATE TABLE users
     FOREIGN KEY (address_id) REFERENCES addresses (address_id) ON DELETE SET NULL
 );
 
-DROP TYPE IF EXISTS permission_enum CASCADE;
-CREATE TYPE permission_enum AS ENUM ('clerk', 'manager', 'admin');
+/*DROP TYPE IF EXISTS permission_enum CASCADE;
+CREATE TYPE permission_enum AS ENUM ('clerk', 'manager', 'admin');*/
 
 DROP TABLE IF EXISTS staff CASCADE;
 CREATE TABLE staff
 (
     staff_id   SERIAL PRIMARY KEY,
-    user_id    INT             NOT NULL UNIQUE,
-    permission permission_enum NOT NULL,
+    user_id    INT         NOT NULL UNIQUE,
+    permission VARCHAR(16) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE
 );
 

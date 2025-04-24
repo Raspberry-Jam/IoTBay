@@ -13,7 +13,7 @@ public partial class Staff
 
     public int UserId { get; set; }
     
-    [Column("permission", TypeName = "permission_enum")] // PostgreSQL enum type name
+    [Column("permission")] // PostgreSQL enum type name
     public Permission Permission { get; set; }
 
     public virtual User User { get; set; } = null!;

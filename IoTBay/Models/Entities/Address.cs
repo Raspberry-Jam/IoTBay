@@ -17,7 +17,7 @@ public partial class Address
 
     public string? Suburb { get; set; }
     
-    [Column("state", TypeName = "state_enum")] // PostgreSQL enum type
+    [Column("state")] // PostgreSQL enum type
     public State? State { get; set; }
 
     public string? Postcode { get; set; }
