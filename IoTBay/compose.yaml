@@ -24,12 +24,12 @@
       context: .
       target: dev
     environment:
-      - DOTNET_USE_POLLING_FILE_WATCHER=1
-      - ASPNETCORE_ENVIRONMENT=Development
-      - DOTNET_RUNNING_IN_CONTAINER=true
-      - DOTNET_DEBUG=1
-      - DOTNET_WATCH=1
-      - CONNECTION_STRING=Host=db;Port=5432;Database=iotbaydb;Username=iotbay;Password=password
+      DOTNET_USE_POLLING_FILE_WATCHER: 1
+      ASPNETCORE_ENVIRONMENT: Development
+      DOTNET_RUNNING_IN_CONTAINER: true
+      DOTNET_DEBUG: 1
+      DOTNET_WATCH: 1
+      CONNECTION_STRING: Host=db;Port=5432;Database=iotbaydb;Username=iotbay;Password=password
     volumes:
       - .:/app
     ports:
