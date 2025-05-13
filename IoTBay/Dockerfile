@@ -7,15 +7,14 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["IoTBay/IoTBay.csproj", "IoTBay/"]
-RUN dotnet restore "IoTBay/IoTBay.csproj"
+COPY ["IoTBay.csproj", "."]
+RUN dotnet restore "IoTBay.csproj"
 COPY . .
-WORKDIR "/src/IoTBay"
-RUN dotnet build "IoTBay.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./IoTBay.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "IoTBay.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./IoTBay.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
@@ -25,10 +24,9 @@ ENTRYPOINT ["dotnet", "IoTBay.dll"]
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS dev
 ARG BUILD_CONFIGURATION=Debug
 WORKDIR /src
-COPY ["IoTBay/IoTBay.csproj", "IoTBay/"]
-RUN dotnet restore "IoTBay/IoTBay.csproj"
+COPY ["IoTBay.csproj", "."]
+RUN dotnet restore "IoTBay.csproj"
 COPY . .
-WORKDIR "/src/IoTBay"
-RUN dotnet build "IoTBay.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./IoTBay.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 CMD ["dotnet", "watch", "run", "--configuration", "Debug"]
