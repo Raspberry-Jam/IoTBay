@@ -1,0 +1,28 @@
+@{
+    ViewData["Title"] = "Storefront Page";
+}
+
+@model List<IoTBay.Models.Entities.Product>
+
+<h2 class="text-center mb-4">Product Catalogue</h2>
+
+<div class="container">
+    <div class="row">
+        @foreach (var product in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    @if (!string.IsNullOrEmpty(product.ThumbnailUri))
+                    {
+                        <img src="@product.ThumbnailUri" class="card-img-top" alt="@product.Name" />
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">@product.Name</h5>
+                        <p class="card-text">@product.ShortDescription</p>
+                        <p class="card-text"><strong>Price:</strong> $@product.Price</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

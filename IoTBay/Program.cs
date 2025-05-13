@@ -40,6 +40,14 @@ public class Program
                     State = State.NSW,
                     Postcode = "8823"
                 });
+                ctx.Products.Add(new Product
+                {
+                    ProductId = 000001,
+                    Name = "Keyboard",
+                    Price = 32.05,
+                    ShortDescription = "Standard QWERTY layout USB Keyboard",
+                    FullDescription = "This Keyboard is a part of IotBay's Standard Office Equipment Range and has full USB capability, is compatible with Windows, MacOS and Linux"
+                });
                 ctx.SaveChanges();
             }
         }
