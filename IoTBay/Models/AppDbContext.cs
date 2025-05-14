@@ -325,9 +325,11 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.ContactId).HasColumnName("contact_id");
             entity.Property(e => e.PasswordHash)
                 .HasMaxLength(256)
+                .IsFixedLength()
                 .HasColumnName("password_hash");
             entity.Property(e => e.PasswordSalt)
                 .HasMaxLength(128)
+                .IsFixedLength()
                 .HasColumnName("password_salt");
             entity.Property(e => e.Username)
                 .HasMaxLength(64)

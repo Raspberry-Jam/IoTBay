@@ -40,10 +40,10 @@ DROP TABLE IF EXISTS users CASCADE;
 CREATE TABLE users
 (
     user_id       SERIAL PRIMARY KEY,
-    username      VARCHAR(64)  NOT NULL UNIQUE,
-    password_hash VARCHAR(256) NOT NULL,
-    password_salt VARCHAR(128) NOT NULL,
-    contact_id    INT          NOT NULL UNIQUE,
+    username      VARCHAR(64) NOT NULL UNIQUE,
+    password_hash CHAR(256)  NOT NULL,
+    password_salt CHAR(128)  NOT NULL,
+    contact_id    INT         NOT NULL UNIQUE,
     address_id    INT,
     FOREIGN KEY (contact_id) REFERENCES contacts (contact_id) ON DELETE SET NULL,
     FOREIGN KEY (address_id) REFERENCES addresses (address_id) ON DELETE SET NULL
