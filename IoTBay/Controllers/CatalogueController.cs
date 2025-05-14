@@ -19,12 +19,4 @@ public class CatalogueController : Controller
         var products = _db.Products.ToList(); // load products
         return View(products);
     }
-    
-    public void Store()
-    {
-        
-    }
-    
-    
-    
 }

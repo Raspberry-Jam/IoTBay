@@ -11,17 +11,17 @@
         @foreach (var product in Model)
         {
             <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    @if (!string.IsNullOrEmpty(product.ThumbnailUri))
-                    {
-                        <img src="@product.ThumbnailUri" class="card-img-top" alt="@product.Name" />
-                    }
-                    <div class="card-body">
-                        <h5 class="card-title">@product.Name</h5>
-                        <p class="card-text">@product.ShortDescription</p>
-                        <p class="card-text"><strong>Price:</strong> $@product.Price</p>
+                <!-- Link to ProductPageController's ProductPage action -->
+                <a asp-controller="ProductPage" asp-action="ProductPage" asp-route-id="@product.ProductId.ToString("D6")" class="text-decoration-none text-dark">
+                    <div class="card h-100">
+                            <img src="~/Photos/@(product.ProductId.ToString("D6") + ".png")" alt="@product.Name" class="img-fluid mb-3" />
+                        <div class="card-body">
+                            <h5 class="card-title">@product.Name</h5>
+                            <p class="card-text">@product.ShortDescription</p>
+                            <p class="card-text"><strong>Price:</strong> $@product.Price</p>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
         }
     </div>

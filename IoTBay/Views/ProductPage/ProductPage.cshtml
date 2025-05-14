@@ -1,0 +1,14 @@
+@model IoTBay.Models.Entities.Product
+
+@{
+    ViewData["Title"] = "Product Page - " + Model.Name;
+}
+
+<div class="container mt-4">
+    <h2>@Model.Name</h2>
+
+    <img src="~/Photos/@(Model.ProductId.ToString("D6") + ".png")" alt="@Model.Name" class="img-fluid mb-3" />
+
+    <p><strong>Description:</strong> @Model.ShortDescription</p>
+    <p><strong>Price:</strong> $@Model.Price</p>
+</div>

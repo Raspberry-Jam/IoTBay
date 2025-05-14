@@ -30,4 +30,8 @@
       <Folder Include="Views\Account\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Include="wwwroot\Photos\000001.png" />
+    </ItemGroup>
+
 </Project>

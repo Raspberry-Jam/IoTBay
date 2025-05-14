@@ -48,6 +48,14 @@ public class Program
                     ShortDescription = "Standard QWERTY layout USB Keyboard",
                     FullDescription = "This Keyboard is a part of IotBay's Standard Office Equipment Range and has full USB capability, is compatible with Windows, MacOS and Linux"
                 });
+                ctx.Products.Add(new Product
+                {
+                    ProductId = 000002,
+                    Name = "Mikhail Himself",
+                    Price = 69.69,
+                    ShortDescription = "Balls",
+                    FullDescription = "Ballz Sackthman"
+                });
                 ctx.SaveChanges();
             }
         }
