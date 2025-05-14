@@ -1,4 +1,6 @@
 using IoTBay.Models;
+using IoTBay.Models.Entities;
+using IoTBay.Models.Views;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IoTBay.Controllers;
@@ -13,15 +15,83 @@ public class RegisterController : Controller
         _logger = logger;
         _db = db;
     }
-    
+
     public IActionResult Index()
     {
-        return View();
+        var model = new RegisterViewModel();
+        return View(model);
     }
 
     [HttpPost]
-    public void Register()
+    public IActionResult Register(RegisterViewModel model)
     {
+        if (!ModelState.IsValid)
+        {
+            foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+            {
+                _logger.LogError(error.ErrorMessage);
+            }
+            // TODO: Add model error handling with ModelState.AddModelError()
+            _logger.LogError("Register was passed with an invalid model");
+            return RedirectToAction("Index");
+        }
+
+        if (model.ProceedWithoutAddress) // The user has acknowledged the partial address, and agrees to proceed
+        {
+            model.Address = null;
+        }
+
+        if (model.Address != null)
+        {
+            bool isAnyFieldFilled = !string.IsNullOrWhiteSpace(model.Address.StreetLine1) ||
+                                    !string.IsNullOrWhiteSpace(model.Address.Suburb) ||
+                                    !string.IsNullOrWhiteSpace(model.Address.State.ToString()) ||
+                                    !string.IsNullOrWhiteSpace(model.Address.Postcode);
+            bool isAnyFieldEmpty = string.IsNullOrWhiteSpace(model.Address.StreetLine1) ||
+                                   string.IsNullOrWhiteSpace(model.Address.Suburb) ||
+                                   string.IsNullOrWhiteSpace(model.Address.State.ToString()) ||
+                                   string.IsNullOrWhiteSpace(model.Address.Postcode);
+
+            if (isAnyFieldEmpty && isAnyFieldFilled && !model.ProceedWithoutAddress) // This indicates a partial address
+            {
+                ModelState.AddModelError("partialAddress",
+                    "Your address is incomplete. Click 'Proceed Without Address' to ignore it.");
+                return View("Index", model);
+            }
+        }
         
+        // TODO: We will be using emails for login only, so remove username check and usernames entirely
+        // Check if username is in use
+        var emailQuery = 
+            from c in _db.Contacts
+            where c.Email == model.Contact.Email
+            select c;
+        
+        var usernameQuery =
+            from u in _db.Users
+            where u.Username == model.Username
+            select u;
+
+        if (emailQuery.Any()) 
+            ModelState.AddModelError("emailInUse", "This email is already in use! Please use another one.");
+        if (usernameQuery.Any()) 
+            ModelState.AddModelError("usernameInUse", "This username is already in use! Please use another one.");
+
+        string passwordHash = Utils.HashUtils.HashPassword(model.Password, out var salt);
+
+        User user = new User
+        {
+            Username = model.Username,
+            PasswordHash = passwordHash,
+            PasswordSalt = salt,
+            Contact = model.Contact,
+            Address = model.Address
+        };
+
+        _db.Users.Add(user);
+
+        _db.SaveChanges();
+        
+        return View("Welcome", user);
     }
 }
