@@ -1,4 +1,4 @@
-namespace IoTBay.Models.PageModels;
+namespace IoTBay.Models.Views;
 
 public class ErrorViewModel
 {
