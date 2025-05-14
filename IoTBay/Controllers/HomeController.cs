@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using IoTBay.Models;
-using IoTBay.Models.PageModels;
+using IoTBay.Models.Views;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IoTBay.Controllers;
