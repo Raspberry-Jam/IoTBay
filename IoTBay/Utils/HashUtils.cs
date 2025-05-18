@@ -21,8 +21,6 @@ public class HashUtils
             HashSize / 2);
         
         salt = Convert.ToHexString(saltBytes);
-        
-        Console.WriteLine(Convert.ToHexString(hashBytes).Length);
         return Convert.ToHexString(hashBytes);
     }
 
