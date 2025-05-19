@@ -22,4 +22,13 @@ public class UserRepository : BaseRepository<User>, IUserRepository
             select u;
         return await query.FirstOrDefaultAsync();
     }
+
+    public async Task<IEnumerable<Product>> GetUserCartProducts(User user)
+    {
+        var query = from c in _db.UserCartProducts
+            where c.User == user
+            select c.Product;
+
+        return await query.ToListAsync();
+    }
 }
