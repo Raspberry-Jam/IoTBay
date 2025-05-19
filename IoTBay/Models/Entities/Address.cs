@@ -25,4 +25,6 @@ public partial class Address
     public string? Postcode { get; set; }
 
     public virtual ICollection<ShipmentMethod> ShipmentMethods { get; set; } = new List<ShipmentMethod>();
+
+    public virtual ICollection<Supplier> Suppliers { get; set; } = new List<Supplier>();
 }

@@ -12,17 +12,17 @@ public enum Role
 public partial class User
 {
     public int UserId { get; set; }
-
-    public string PasswordHash { get; set; } = null!;
-
-    public string PasswordSalt { get; set; } = null!;
-
-    public int ContactId { get; set; }
-
+    
     [Column("role")]
     public Role Role { get; set; }
 
-    public virtual Contact Contact { get; set; } = null!;
+    public string? PasswordHash { get; set; }
+
+    public string? PasswordSalt { get; set; }
+
+    public int? ContactId { get; set; }
+
+    public virtual Contact? Contact { get; set; }
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 

@@ -22,4 +22,6 @@ public partial class Product
     public virtual ICollection<OrderProduct> OrderProducts { get; set; } = new List<OrderProduct>();
 
     public virtual ICollection<UserCartProduct> UserCartProducts { get; set; } = new List<UserCartProduct>();
+
+    public virtual ICollection<Supplier> Suppliers { get; set; } = new List<Supplier>();
 }
