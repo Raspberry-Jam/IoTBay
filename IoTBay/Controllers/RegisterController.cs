@@ -75,6 +75,7 @@ public class RegisterController : Controller
             PasswordHash = passwordHash,
             PasswordSalt = salt,
             Contact = model.Contact,
+            Role = Role.Customer
         };
 
         await _userRepository.Add(user);
