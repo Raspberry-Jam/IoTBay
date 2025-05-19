@@ -66,26 +66,17 @@ public class RegisterController : Controller
             from c in _db.Contacts
             where c.Email == model.Contact.Email
             select c;
-        
-        var usernameQuery =
-            from u in _db.Users
-            where u.Username == model.Username
-            select u;
 
         if (emailQuery.Any()) 
             ModelState.AddModelError("emailInUse", "This email is already in use! Please use another one.");
-        if (usernameQuery.Any()) 
-            ModelState.AddModelError("usernameInUse", "This username is already in use! Please use another one.");
 
         string passwordHash = Utils.HashUtils.HashPassword(model.Password, out var salt);
 
         User user = new User
         {
-            Username = model.Username,
             PasswordHash = passwordHash,
             PasswordSalt = salt,
             Contact = model.Contact,
-            Address = model.Address
         };
 
         _db.Users.Add(user);

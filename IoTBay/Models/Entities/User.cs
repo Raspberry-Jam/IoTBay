@@ -1,10 +1,17 @@
-﻿namespace IoTBay.Models.Entities;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace IoTBay.Models.Entities;
+
+public enum Role
+{
+    Customer, Staff, System
+}
 
 public partial class User
 {
     public int UserId { get; set; }
-
-    public string Username { get; set; } = null!;
 
     public string PasswordHash { get; set; } = null!;
 
@@ -12,15 +19,18 @@ public partial class User
 
     public int ContactId { get; set; }
 
-    public int? AddressId { get; set; }
-
-    public virtual Address? Address { get; set; }
-
-    public virtual Cart? Cart { get; set; }
+    [Column("role")]
+    public Role Role { get; set; }
 
     public virtual Contact Contact { get; set; } = null!;
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
-    public virtual Staff? Staff { get; set; }
+    public virtual ICollection<PaymentMethod> PaymentMethods { get; set; } = new List<PaymentMethod>();
+
+    public virtual ICollection<ShipmentMethod> ShipmentMethods { get; set; } = new List<ShipmentMethod>();
+
+    public virtual ICollection<UserAccessEvent> UserAccessEvents { get; set; } = new List<UserAccessEvent>();
+
+    public virtual ICollection<UserCartProduct> UserCartProducts { get; set; } = new List<UserCartProduct>();
 }

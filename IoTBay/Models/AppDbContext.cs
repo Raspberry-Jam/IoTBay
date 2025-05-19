@@ -16,36 +16,27 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Address> Addresses { get; set; }
 
-    public virtual DbSet<Cart> Carts { get; set; }
-
-    public virtual DbSet<CartProduct> CartProducts { get; set; }
-
-    public virtual DbSet<Catalogue> Catalogues { get; set; }
-
     public virtual DbSet<Contact> Contacts { get; set; }
 
     public virtual DbSet<Order> Orders { get; set; }
 
     public virtual DbSet<OrderProduct> OrderProducts { get; set; }
 
+    public virtual DbSet<PaymentMethod> PaymentMethods { get; set; }
+
     public virtual DbSet<Product> Products { get; set; }
 
-    public virtual DbSet<Staff> Staff { get; set; }
-
-    public virtual DbSet<Store> Stores { get; set; }
-
-    public virtual DbSet<StoreProductStock> StoreProductStocks { get; set; }
+    public virtual DbSet<ShipmentMethod> ShipmentMethods { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
+    public virtual DbSet<UserAccessEvent> UserAccessEvents { get; set; }
+
+    public virtual DbSet<UserCartProduct> UserCartProducts { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if (!optionsBuilder.IsConfigured)
-        {
-            var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
-            optionsBuilder.UseNpgsql(connectionString);
-        }
-    }
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=iotbaydb;Username=iotbay;Password=password");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -75,69 +66,9 @@ public partial class AppDbContext : DbContext
                     // is too stupid to see ternary statements apparently
                     #pragma warning disable CS8602
                     s => s == null ? null : s.ToString().ToLower(), // Enforce PostgreSQL type check
-                    s => s == null ? null : Enum.Parse<State>(s, true));
+                    s => s == null ? null : Enum.Parse<State>(s, true))
                     #pragma warning restore CS8602
-        });
-
-        modelBuilder.Entity<Cart>(entity =>
-        {
-            entity.HasKey(e => e.CartId).HasName("carts_pkey");
-
-            entity.ToTable("carts");
-
-            entity.HasIndex(e => e.UserId, "carts_user_id_key").IsUnique();
-
-            entity.Property(e => e.CartId).HasColumnName("cart_id");
-            entity.Property(e => e.UserId).HasColumnName("user_id");
-
-            entity.HasOne(d => d.User).WithOne(p => p.Cart)
-                .HasForeignKey<Cart>(d => d.UserId)
-                .HasConstraintName("carts_user_id_fkey");
-        });
-
-        modelBuilder.Entity<CartProduct>(entity =>
-        {
-            entity.HasKey(e => new { e.CartId, e.ProductId }).HasName("cart_products_pkey");
-
-            entity.ToTable("cart_products");
-
-            entity.Property(e => e.CartId).HasColumnName("cart_id");
-            entity.Property(e => e.ProductId).HasColumnName("product_id");
-            entity.Property(e => e.Amount).HasColumnName("amount");
-
-            entity.HasOne(d => d.Cart).WithMany(p => p.CartProducts)
-                .HasForeignKey(d => d.CartId)
-                .HasConstraintName("cart_products_cart_id_fkey");
-
-            entity.HasOne(d => d.Product).WithMany(p => p.CartProducts)
-                .HasForeignKey(d => d.ProductId)
-                .HasConstraintName("cart_products_product_id_fkey");
-        });
-
-        modelBuilder.Entity<Catalogue>(entity =>
-        {
-            entity.HasKey(e => e.CatalogueId).HasName("catalogues_pkey");
-
-            entity.ToTable("catalogues");
-
-            entity.Property(e => e.CatalogueId).HasColumnName("catalogue_id");
-
-            entity.HasMany(d => d.Products).WithMany(p => p.Catalogues)
-                .UsingEntity<Dictionary<string, object>>(
-                    "CatalogueProductList",
-                    r => r.HasOne<Product>().WithMany()
-                        .HasForeignKey("ProductId")
-                        .HasConstraintName("catalogue_product_list_product_id_fkey"),
-                    l => l.HasOne<Catalogue>().WithMany()
-                        .HasForeignKey("CatalogueId")
-                        .HasConstraintName("catalogue_product_list_catalogue_id_fkey"),
-                    j =>
-                    {
-                        j.HasKey("CatalogueId", "ProductId").HasName("catalogue_product_list_pkey");
-                        j.ToTable("catalogue_product_list");
-                        j.IndexerProperty<int>("CatalogueId").HasColumnName("catalogue_id");
-                        j.IndexerProperty<int>("ProductId").HasColumnName("product_id");
-                    });
+                .HasColumnName("state");
         });
 
         modelBuilder.Entity<Contact>(entity =>
@@ -155,6 +86,7 @@ public partial class AppDbContext : DbContext
                 .HasColumnName("given_name");
             entity.Property(e => e.PhoneNumber)
                 .HasMaxLength(10)
+                .IsFixedLength()
                 .HasColumnName("phone_number");
             entity.Property(e => e.Surname)
                 .HasMaxLength(128)
@@ -168,22 +100,25 @@ public partial class AppDbContext : DbContext
             entity.ToTable("orders");
 
             entity.Property(e => e.OrderId).HasColumnName("order_id");
-            entity.Property(e => e.AddressId).HasColumnName("address_id");
-            entity.Property(e => e.StoreId).HasColumnName("store_id");
+            entity.Property(e => e.OrderDate).HasColumnName("order_date");
+            entity.Property(e => e.PaymentMethodId).HasColumnName("payment_method_id");
+            entity.Property(e => e.SentDate).HasColumnName("sent_date");
+            entity.Property(e => e.ShipmentMethodId).HasColumnName("shipment_method_id");
             entity.Property(e => e.UserId).HasColumnName("user_id");
 
-            entity.HasOne(d => d.Address).WithMany(p => p.Orders)
-                .HasForeignKey(d => d.AddressId)
-                .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("orders_address_id_fkey");
+            entity.HasOne(d => d.PaymentMethod).WithMany(p => p.Orders)
+                .HasForeignKey(d => d.PaymentMethodId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("orders_payment_method_id_fkey");
 
-            entity.HasOne(d => d.Store).WithMany(p => p.Orders)
-                .HasForeignKey(d => d.StoreId)
-                .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("orders_store_id_fkey");
+            entity.HasOne(d => d.ShipmentMethod).WithMany(p => p.Orders)
+                .HasForeignKey(d => d.ShipmentMethodId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("orders_shipment_method_id_fkey");
 
             entity.HasOne(d => d.User).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("orders_user_id_fkey");
         });
 
@@ -195,15 +130,41 @@ public partial class AppDbContext : DbContext
 
             entity.Property(e => e.OrderId).HasColumnName("order_id");
             entity.Property(e => e.ProductId).HasColumnName("product_id");
-            entity.Property(e => e.Amount).HasColumnName("amount");
+            entity.Property(e => e.Quantity).HasColumnName("quantity");
 
             entity.HasOne(d => d.Order).WithMany(p => p.OrderProducts)
                 .HasForeignKey(d => d.OrderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("order_products_order_id_fkey");
 
             entity.HasOne(d => d.Product).WithMany(p => p.OrderProducts)
                 .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("order_products_product_id_fkey");
+        });
+
+        modelBuilder.Entity<PaymentMethod>(entity =>
+        {
+            entity.HasKey(e => e.PaymentMethodId).HasName("payment_methods_pkey");
+
+            entity.ToTable("payment_methods");
+
+            entity.Property(e => e.PaymentMethodId).HasColumnName("payment_method_id");
+            entity.Property(e => e.CardNumber)
+                .HasMaxLength(16)
+                .IsFixedLength()
+                .HasColumnName("card_number");
+            entity.Property(e => e.Cvv)
+                .HasMaxLength(3)
+                .IsFixedLength()
+                .HasColumnName("cvv");
+            entity.Property(e => e.Expiry).HasColumnName("expiry");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.HasOne(d => d.User).WithMany(p => p.PaymentMethods)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("payment_methods_user_id_fkey");
         });
 
         modelBuilder.Entity<Product>(entity =>
@@ -216,9 +177,6 @@ public partial class AppDbContext : DbContext
 
             entity.Property(e => e.ProductId).HasColumnName("product_id");
             entity.Property(e => e.FullDescription).HasColumnName("full_description");
-            entity.Property(e => e.GalleryFolderUri)
-                .HasMaxLength(128)
-                .HasColumnName("gallery_folder_uri");
             entity.Property(e => e.Name)
                 .HasMaxLength(256)
                 .HasColumnName("name");
@@ -226,88 +184,34 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.ShortDescription)
                 .HasMaxLength(512)
                 .HasColumnName("short_description");
-            entity.Property(e => e.ThumbnailUri)
+            entity.Property(e => e.Stock).HasColumnName("stock");
+            entity.Property(e => e.Type)
                 .HasMaxLength(128)
-                .HasColumnName("thumbnail_uri");
+                .HasColumnName("type");
         });
 
-        modelBuilder.Entity<Staff>(entity =>
+        modelBuilder.Entity<ShipmentMethod>(entity =>
         {
-            entity.HasKey(e => e.StaffId).HasName("staff_pkey");
+            entity.HasKey(e => e.ShipmentMethodId).HasName("shipment_methods_pkey");
 
-            entity.ToTable("staff");
+            entity.ToTable("shipment_methods");
 
-            entity.HasIndex(e => e.UserId, "staff_user_id_key").IsUnique();
-
-            entity.Property(e => e.StaffId).HasColumnName("staff_id");
+            entity.Property(e => e.ShipmentMethodId).HasColumnName("shipment_method_id");
+            entity.Property(e => e.AddressId).HasColumnName("address_id");
+            entity.Property(e => e.Method)
+                .HasMaxLength(128)
+                .HasColumnName("method");
             entity.Property(e => e.UserId).HasColumnName("user_id");
 
-            entity.Property(e => e.Permission)
-                .HasConversion(
-                    p => p.ToString().ToLower(),
-                    p => Enum.Parse<Permission>(p, true)
-                );
-
-            entity.HasOne(d => d.User).WithOne(p => p.Staff)
-                .HasForeignKey<Staff>(d => d.UserId)
-                .HasConstraintName("staff_user_id_fkey");
-        });
-
-        modelBuilder.Entity<Store>(entity =>
-        {
-            entity.HasKey(e => e.StoreId).HasName("stores_pkey");
-
-            entity.ToTable("stores");
-
-            entity.Property(e => e.StoreId).HasColumnName("store_id");
-            entity.Property(e => e.AddressId).HasColumnName("address_id");
-            entity.Property(e => e.ContactId).HasColumnName("contact_id");
-
-            entity.HasOne(d => d.Address).WithMany(p => p.Stores)
+            entity.HasOne(d => d.Address).WithMany(p => p.ShipmentMethods)
                 .HasForeignKey(d => d.AddressId)
-                .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("stores_address_id_fkey");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("shipment_methods_address_id_fkey");
 
-            entity.HasOne(d => d.Contact).WithMany(p => p.Stores)
-                .HasForeignKey(d => d.ContactId)
-                .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("stores_contact_id_fkey");
-
-            entity.HasMany(d => d.Catalogues).WithMany(p => p.Stores)
-                .UsingEntity<Dictionary<string, object>>(
-                    "StoreCatalogue",
-                    r => r.HasOne<Catalogue>().WithMany()
-                        .HasForeignKey("CatalogueId")
-                        .HasConstraintName("store_catalogues_catalogue_id_fkey"),
-                    l => l.HasOne<Store>().WithMany()
-                        .HasForeignKey("StoreId")
-                        .HasConstraintName("store_catalogues_store_id_fkey"),
-                    j =>
-                    {
-                        j.HasKey("StoreId", "CatalogueId").HasName("store_catalogues_pkey");
-                        j.ToTable("store_catalogues");
-                        j.IndexerProperty<int>("StoreId").HasColumnName("store_id");
-                        j.IndexerProperty<int>("CatalogueId").HasColumnName("catalogue_id");
-                    });
-        });
-
-        modelBuilder.Entity<StoreProductStock>(entity =>
-        {
-            entity.HasKey(e => new { e.StoreId, e.ProductId }).HasName("store_product_stock_pkey");
-
-            entity.ToTable("store_product_stock");
-
-            entity.Property(e => e.StoreId).HasColumnName("store_id");
-            entity.Property(e => e.ProductId).HasColumnName("product_id");
-            entity.Property(e => e.Stock).HasColumnName("stock");
-
-            entity.HasOne(d => d.Product).WithMany(p => p.StoreProductStocks)
-                .HasForeignKey(d => d.ProductId)
-                .HasConstraintName("store_product_stock_product_id_fkey");
-
-            entity.HasOne(d => d.Store).WithMany(p => p.StoreProductStocks)
-                .HasForeignKey(d => d.StoreId)
-                .HasConstraintName("store_product_stock_store_id_fkey");
+            entity.HasOne(d => d.User).WithMany(p => p.ShipmentMethods)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("shipment_methods_user_id_fkey");
         });
 
         modelBuilder.Entity<User>(entity =>
@@ -318,10 +222,7 @@ public partial class AppDbContext : DbContext
 
             entity.HasIndex(e => e.ContactId, "users_contact_id_key").IsUnique();
 
-            entity.HasIndex(e => e.Username, "users_username_key").IsUnique();
-
             entity.Property(e => e.UserId).HasColumnName("user_id");
-            entity.Property(e => e.AddressId).HasColumnName("address_id");
             entity.Property(e => e.ContactId).HasColumnName("contact_id");
             entity.Property(e => e.PasswordHash)
                 .HasMaxLength(256)
@@ -331,19 +232,57 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(128)
                 .IsFixedLength()
                 .HasColumnName("password_salt");
-            entity.Property(e => e.Username)
-                .HasMaxLength(64)
-                .HasColumnName("username");
-
-            entity.HasOne(d => d.Address).WithMany(p => p.Users)
-                .HasForeignKey(d => d.AddressId)
-                .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("users_address_id_fkey");
+            entity.Property(e => e.Role)
+                .HasConversion(
+                    r => r.ToString(), 
+                    r => Enum.Parse<Role>(r, true))
+                .HasColumnName("role");
 
             entity.HasOne(d => d.Contact).WithOne(p => p.User)
                 .HasForeignKey<User>(d => d.ContactId)
-                .OnDelete(DeleteBehavior.SetNull)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("users_contact_id_fkey");
+        });
+
+        modelBuilder.Entity<UserAccessEvent>(entity =>
+        {
+            entity.HasKey(e => e.UserAccessEventId).HasName("user_access_events_pkey");
+
+            entity.ToTable("user_access_events");
+
+            entity.Property(e => e.UserAccessEventId).HasColumnName("user_access_event_id");
+            entity.Property(e => e.EventTime)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("event_time");
+            entity.Property(e => e.EventType)
+                .HasMaxLength(8)
+                .HasColumnName("event_type");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.HasOne(d => d.User).WithMany(p => p.UserAccessEvents)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("user_access_events_user_id_fkey");
+        });
+
+        modelBuilder.Entity<UserCartProduct>(entity =>
+        {
+            entity.HasKey(e => new { e.UserId, e.ProductId }).HasName("user_cart_products_pkey");
+
+            entity.ToTable("user_cart_products");
+
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.ProductId).HasColumnName("product_id");
+            entity.Property(e => e.Quantity).HasColumnName("quantity");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.UserCartProducts)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("user_cart_products_product_id_fkey");
+
+            entity.HasOne(d => d.User).WithMany(p => p.UserCartProducts)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("user_cart_products_user_id_fkey");
         });
 
         OnModelCreatingPartial(modelBuilder);

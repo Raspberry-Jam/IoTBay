@@ -1,4 +1,7 @@
-﻿namespace IoTBay.Models.Entities;
+﻿using System;
+using System.Collections.Generic;
+
+namespace IoTBay.Models.Entities;
 
 public partial class Contact
 {
@@ -11,8 +14,6 @@ public partial class Contact
     public string Email { get; set; } = null!;
 
     public string? PhoneNumber { get; set; }
-
-    public virtual ICollection<Store> Stores { get; set; } = new List<Store>();
 
     public virtual User? User { get; set; }
 }
