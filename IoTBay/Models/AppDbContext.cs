@@ -1,9 +1,10 @@
-﻿using IoTBay.Models.Entities;
+﻿using IoTBay.DataAccess;
+using IoTBay.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace IoTBay.Models;
 
-public partial class AppDbContext : DbContext
+public partial class AppDbContext : DbContext, IAppDbContext
 {
     public AppDbContext()
     {
@@ -28,6 +29,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<ShipmentMethod> ShipmentMethods { get; set; }
 
+    public virtual DbSet<Supplier> Suppliers { get; set; }
+
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<UserAccessEvent> UserAccessEvents { get; set; }
@@ -35,8 +38,13 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<UserCartProduct> UserCartProducts { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=iotbaydb;Username=iotbay;Password=password");
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+            optionsBuilder.UseNpgsql(connectionString);
+        }
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -212,6 +220,47 @@ public partial class AppDbContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("shipment_methods_user_id_fkey");
+        });
+
+        modelBuilder.Entity<Supplier>(entity =>
+        {
+            entity.HasKey(e => e.SupplierId).HasName("suppliers_pkey");
+
+            entity.ToTable("suppliers");
+
+            entity.Property(e => e.SupplierId).HasColumnName("supplier_id");
+            entity.Property(e => e.AddressId).HasColumnName("address_id");
+            entity.Property(e => e.CompanyName)
+                .HasMaxLength(128)
+                .HasColumnName("company_name");
+            entity.Property(e => e.ContactId).HasColumnName("contact_id");
+
+            entity.HasOne(d => d.Address).WithMany(p => p.Suppliers)
+                .HasForeignKey(d => d.AddressId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("suppliers_address_id_fkey");
+
+            entity.HasOne(d => d.Contact).WithMany(p => p.Suppliers)
+                .HasForeignKey(d => d.ContactId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("suppliers_contact_id_fkey");
+
+            entity.HasMany(d => d.Products).WithMany(p => p.Suppliers)
+                .UsingEntity<Dictionary<string, object>>(
+                    "SupplierProduct",
+                    r => r.HasOne<Product>().WithMany()
+                        .HasForeignKey("ProductId")
+                        .HasConstraintName("supplier_products_product_id_fkey"),
+                    l => l.HasOne<Supplier>().WithMany()
+                        .HasForeignKey("SupplierId")
+                        .HasConstraintName("supplier_products_supplier_id_fkey"),
+                    j =>
+                    {
+                        j.HasKey("SupplierId", "ProductId").HasName("supplier_products_pkey");
+                        j.ToTable("supplier_products");
+                        j.IndexerProperty<int>("SupplierId").HasColumnName("supplier_id");
+                        j.IndexerProperty<int>("ProductId").HasColumnName("product_id");
+                    });
         });
 
         modelBuilder.Entity<User>(entity =>
