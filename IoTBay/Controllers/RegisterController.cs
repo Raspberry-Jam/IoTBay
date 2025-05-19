@@ -61,8 +61,6 @@ public class RegisterController : Controller
             }
         }
         
-        // TODO: We will be using emails for login only, so remove username check and usernames entirely
-        // Check if username is in use
         var testEmail = await _userRepository.GetByEmail(model.Contact.Email);
 
         if (testEmail != null) 
