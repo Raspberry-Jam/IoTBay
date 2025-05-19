@@ -20,6 +20,6 @@ public class UserRepository : BaseRepository<User>, IUserRepository
         var query = from u in _users
             where u.Contact.Email == email
             select u;
-        return await query.FirstAsync();
+        return await query.FirstOrDefaultAsync();
     }
 }
