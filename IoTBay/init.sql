@@ -46,14 +46,14 @@ DROP TABLE IF EXISTS users CASCADE;
 CREATE TABLE users
 (
     user_id       SERIAL PRIMARY KEY,
-    password_hash CHAR(256) NOT NULL,
-    password_salt CHAR(128) NOT NULL,
-    contact_id    INT       NOT NULL UNIQUE,
-    role VARCHAR(8) NOT NULL CHECK (role IN ('customer', 'staff', 'system')),
+    role          VARCHAR(16) NOT NULL CHECK (role IN ('customer', 'staff', 'system', 'anonymous')),
+    password_hash CHAR(256) CHECK (role = 'anonymous' OR password_hash IS NOT NULL), -- Ensure if a customer is not anonymous, they have a password
+    password_salt CHAR(128) CHECK (role = 'anonymous' OR password_salt IS NOT NULL), -- ^^
+    contact_id    INT UNIQUE CHECK (role = 'anonymous' OR contact_id IS NOT NULL), -- Ensure if a customer is not anonymous, they have a contact
     FOREIGN KEY (contact_id) REFERENCES contacts (contact_id) ON DELETE SET DEFAULT
 );
-INSERT INTO users (user_id, password_hash, password_salt, contact_id, role)
-VALUES (-1, 'INVALID_HASH', 'INVALID_SALT', -1, 'customer');
+INSERT INTO users (user_id, role)
+VALUES (-1, 'anonymous');
 
 DROP TABLE IF EXISTS user_access_events CASCADE;
 CREATE TABLE user_access_events
