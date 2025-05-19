@@ -1,3 +1,6 @@
+using IoTBay.DataAccess;
+using IoTBay.DataAccess.Implementations;
+using IoTBay.DataAccess.Interfaces;
 using IoTBay.Models;
 using IoTBay.Models.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +20,9 @@ public class Program
         builder.Services.AddDbContext<AppDbContext>(options => options
                 .UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING"))
                 .EnableSensitiveDataLogging());
+        
+        builder.Services.AddScoped<IAppDbContext, AppDbContext>();
+        builder.Services.AddScoped<IUserRepository, UserRepository>();
 
         var app = builder.Build();
 
