@@ -123,6 +123,29 @@ CREATE TABLE orders
 INSERT INTO orders (order_id, user_id, shipment_method_id, payment_method_id, order_date)
 VALUES (-1, -1, -1, -1, '0001-01-01');
 
+DROP TABLE IF EXISTS suppliers CASCADE;
+CREATE TABLE suppliers
+(
+    supplier_id  SERIAL PRIMARY KEY,
+    contact_id   INT          NOT NULL,
+    address_id   INT          NOT NULL,
+    company_name VARCHAR(128) NOT NULL,
+    FOREIGN KEY (contact_id) REFERENCES contacts (contact_id) ON DELETE SET DEFAULT,
+    FOREIGN KEY (address_id) REFERENCES addresses (address_id) ON DELETE SET DEFAULT
+);
+INSERT INTO suppliers (supplier_id, contact_id, address_id, company_name)
+VALUES (-1, -1, -1, 'unknown');
+
+DROP TABLE IF EXISTS supplier_products CASCADE;
+CREATE TABLE supplier_products
+(
+    supplier_id INT NOT NULL,
+    product_id  INT NOT NULL,
+    PRIMARY KEY (supplier_id, product_id),
+    FOREIGN KEY (supplier_id) REFERENCES suppliers (supplier_id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products (product_id) ON DELETE CASCADE
+);
+
 DROP TABLE IF EXISTS order_products CASCADE;
 CREATE TABLE order_products
 (
@@ -165,3 +188,4 @@ ALTER SEQUENCE products_product_id_seq RESTART WITH 1;
 ALTER SEQUENCE shipment_methods_shipment_method_id_seq RESTART WITH 1;
 ALTER SEQUENCE payment_methods_payment_method_id_seq RESTART WITH 1;
 ALTER SEQUENCE orders_order_id_seq RESTART WITH 1;
+ALTER SEQUENCE suppliers_supplier_id_seq RESTART WITH 1;
