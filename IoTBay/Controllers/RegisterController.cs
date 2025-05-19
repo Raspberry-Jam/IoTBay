@@ -1,3 +1,4 @@
+using IoTBay.DataAccess.Interfaces;
 using IoTBay.Models;
 using IoTBay.Models.Entities;
 using IoTBay.Models.Views;
@@ -8,12 +9,12 @@ namespace IoTBay.Controllers;
 public class RegisterController : Controller
 {
     private readonly ILogger<RegisterController> _logger;
-    private readonly AppDbContext _db;
+    private readonly IUserRepository _userRepository;
 
-    public RegisterController(ILogger<RegisterController> logger, AppDbContext db)
+    public RegisterController(ILogger<RegisterController> logger, IUserRepository userRepository)
     {
         _logger = logger;
-        _db = db;
+        _userRepository = userRepository;
     }
 
     public IActionResult Index()
@@ -23,7 +24,7 @@ public class RegisterController : Controller
     }
 
     [HttpPost]
-    public IActionResult Register(RegisterViewModel model)
+    public async Task<IActionResult> Register(RegisterViewModel model)
     {
         if (!ModelState.IsValid)
         {
@@ -62,12 +63,9 @@ public class RegisterController : Controller
         
         // TODO: We will be using emails for login only, so remove username check and usernames entirely
         // Check if username is in use
-        var emailQuery = 
-            from c in _db.Contacts
-            where c.Email == model.Contact.Email
-            select c;
+        var testEmail = await _userRepository.GetByEmail(model.Contact.Email);
 
-        if (emailQuery.Any()) 
+        if (testEmail != null) 
             ModelState.AddModelError("emailInUse", "This email is already in use! Please use another one.");
 
         string passwordHash = Utils.HashUtils.HashPassword(model.Password, out var salt);
@@ -79,9 +77,7 @@ public class RegisterController : Controller
             Contact = model.Contact,
         };
 
-        _db.Users.Add(user);
-
-        _db.SaveChanges();
+        await _userRepository.Add(user);
         
         return View("Welcome", user);
     }
