@@ -283,7 +283,7 @@ public partial class AppDbContext : DbContext, IAppDbContext
                 .HasColumnName("password_salt");
             entity.Property(e => e.Role)
                 .HasConversion(
-                    r => r.ToString(), 
+                    r => r.ToString().ToLower(), 
                     r => Enum.Parse<Role>(r, true))
                 .HasColumnName("role");
 
