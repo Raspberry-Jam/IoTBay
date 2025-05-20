@@ -29,29 +29,49 @@ public class Program
         using (var scope = app.Services.CreateScope())
         {
             var ctx = scope.ServiceProvider.GetRequiredService<IAppDbContext>();
-            ctx.Addresses.Add(new Address
+            var addressQuery = from a in ctx.Addresses
+                where a.AddressId >= 1
+                select a;
+            var productQuery = from p in ctx.Products
+                where p.ProductId >= 1
+                select p;
+            if (!addressQuery.Any())
             {
-                StreetLine1 = "123 Test Street",
-                Suburb = "Springfield",
-                State = State.ACT,
-                Postcode = "1234"
-            });
-            ctx.Addresses.Add(new Address
+                ctx.Addresses.Add(new Address
+                {
+                    StreetLine1 = "123 Test Street",
+                    Suburb = "Springfield",
+                    State = State.ACT,
+                    Postcode = "1234"
+                });
+                ctx.Addresses.Add(new Address
+                {
+                    StreetLine1 = "245 Bug Blvd",
+                    StreetLine2 = "Unit 87",
+                    Suburb = "Woodland",
+                    State = State.NSW,
+                    Postcode = "8823"
+                });
+            } 
+            else
             {
-                StreetLine1 = "245 Bug Blvd",
-                StreetLine2 = "Unit 87",
-                Suburb = "Woodland",
-                State = State.NSW,
-                Postcode = "8823"
-            });
-            ctx.Products.Add(new Product
+                Console.WriteLine("Addresses already exist");
+            }
+
+            if (!productQuery.Any()) {
+                ctx.Products.Add(new Product
+                {
+                    Name = "Keyboard",
+                    Type = "Keyboard",
+                    Price = 32.05,
+                    ShortDescription = "Standard QWERTY layout USB Keyboard",
+                    FullDescription = "This Keyboard is a part of IotBay's Standard Office Equipment Range and has full USB capability, is compatible with Windows, MacOS and Linux"
+                });
+            }
+            else
             {
-                Name = "Keyboard",
-                Type = "Keyboard",
-                Price = 32.05,
-                ShortDescription = "Standard QWERTY layout USB Keyboard",
-                FullDescription = "This Keyboard is a part of IotBay's Standard Office Equipment Range and has full USB capability, is compatible with Windows, MacOS and Linux"
-            });
+                Console.WriteLine("Products already exist");
+            }
             ctx.SaveChanges();
         }
 
