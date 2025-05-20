@@ -11,7 +11,7 @@ public class UserRepository(AppDbContext db) : BaseRepository<User>(db)
         var query = from u in _db.Users
             where u.Contact.Email == email
             select u;
-        return await query.FirstOrDefaultAsync();
+        return await query.Include(u => u.Contact).FirstOrDefaultAsync();
     }
 
     public async Task<IEnumerable<Product>> GetUserCartProducts(User user)
