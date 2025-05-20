@@ -1,10 +1,10 @@
-using IoTBay.DataAccess.Interfaces;
+using IoTBay.Models;
 using IoTBay.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace IoTBay.DataAccess.Implementations;
+namespace IoTBay.Repositories;
 
-public class UserRepository(IAppDbContext db) : BaseRepository<User>(db), IUserRepository
+public class UserRepository(AppDbContext db) : BaseRepository<User>(db)
 {
     public async Task<User?> GetByEmail(string email)
     {

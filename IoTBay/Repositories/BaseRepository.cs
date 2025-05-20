@@ -1,14 +1,14 @@
-using IoTBay.DataAccess.Interfaces;
+using IoTBay.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace IoTBay.DataAccess.Implementations;
+namespace IoTBay.Repositories;
 
-public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : class
+public abstract class BaseRepository<TEntity> where TEntity : class
 {
-    protected readonly IAppDbContext _db;
+    protected readonly AppDbContext _db;
     protected readonly DbSet<TEntity> _dbSet;
     
-    public BaseRepository(IAppDbContext db)
+    public BaseRepository(AppDbContext db)
     {
         _db = db;
         _dbSet = _db.Set<TEntity>();

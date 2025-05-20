@@ -1,10 +1,9 @@
-﻿using IoTBay.DataAccess;
-using IoTBay.Models.Entities;
+﻿using IoTBay.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace IoTBay.Models;
 
-public partial class AppDbContext : DbContext, IAppDbContext
+public partial class AppDbContext : DbContext
 {
     public AppDbContext()
     {

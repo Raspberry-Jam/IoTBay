@@ -1,8 +1,6 @@
-using IoTBay.DataAccess;
-using IoTBay.DataAccess.Implementations;
-using IoTBay.DataAccess.Interfaces;
 using IoTBay.Models;
 using IoTBay.Models.Entities;
+using IoTBay.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace IoTBay;
@@ -22,21 +20,21 @@ public class Program
                 .EnableSensitiveDataLogging());
         
         // Register model entity repositories for dependency injection
-        builder.Services.AddScoped<IAppDbContext, AppDbContext>();
-        builder.Services.AddScoped<IAddressRepository, AddressRepository>();
-        builder.Services.AddScoped<IContactRepository, ContactRepository>();
-        builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-        builder.Services.AddScoped<IPaymentMethod, PaymentMethodRepository>();
-        builder.Services.AddScoped<IProductRepository, ProductRepository>();
-        builder.Services.AddScoped<IShipmentMethodRepository, ShipmentMethodRepository>();
-        builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
-        builder.Services.AddScoped<IUserRepository, UserRepository>();
+        builder.Services.AddScoped<AppDbContext>();
+        builder.Services.AddScoped<AddressRepository>();
+        builder.Services.AddScoped<ContactRepository>();
+        builder.Services.AddScoped<OrderRepository>();
+        builder.Services.AddScoped<PaymentMethodRepository>();
+        builder.Services.AddScoped<ProductRepository>();
+        builder.Services.AddScoped<ShipmentMethodRepository>();
+        builder.Services.AddScoped<SupplierRepository>();
+        builder.Services.AddScoped<UserRepository>();
 
         var app = builder.Build();
 
         using (var scope = app.Services.CreateScope())
         {
-            var ctx = scope.ServiceProvider.GetRequiredService<IAppDbContext>();
+            var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var addressQuery = from a in ctx.Addresses
                 where a.AddressId >= 1
                 select a;
