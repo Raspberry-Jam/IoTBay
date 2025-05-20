@@ -1,3 +1,6 @@
+using IoTBay.DataAccess;
+using IoTBay.DataAccess.Implementations;
+using IoTBay.DataAccess.Interfaces;
 using IoTBay.Models;
 using IoTBay.Models.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +20,17 @@ public class Program
         builder.Services.AddDbContext<AppDbContext>(options => options
                 .UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING"))
                 .EnableSensitiveDataLogging());
+        
+        // Register model entity repositories for dependency injection
+        builder.Services.AddScoped<IAppDbContext, AppDbContext>();
+        builder.Services.AddScoped<IAddressRepository, AddressRepository>();
+        builder.Services.AddScoped<IContactRepository, ContactRepository>();
+        builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+        builder.Services.AddScoped<IPaymentMethod, PaymentMethodRepository>();
+        builder.Services.AddScoped<IProductRepository, ProductRepository>();
+        builder.Services.AddScoped<IShipmentMethodRepository, ShipmentMethodRepository>();
+        builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
+        builder.Services.AddScoped<IUserRepository, UserRepository>();
 
         var app = builder.Build();
 
