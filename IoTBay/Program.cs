@@ -49,6 +49,29 @@ public class Program
             var productQuery = from p in ctx.Products
                 where p.ProductId >= 1
                 select p;
+            var userQuery = from u in ctx.Users
+                where u.UserId >= 1
+                select u;
+
+            if (!userQuery.Any())
+            {
+                var contact = new Contact
+                {
+                    Email = "test@test.com",
+                    GivenName = "Tester",
+                    Surname = "Debugger"
+                };
+                ctx.Contacts.Add(contact);
+                var passwordHash = Utils.HashUtils.HashPassword("password", out var salt);
+                ctx.Users.Add(new User
+                {
+                    PasswordHash = passwordHash,
+                    PasswordSalt = salt,
+                    Contact = contact,
+                    Role = Role.Customer
+                });
+            }
+            
             if (!addressQuery.Any())
             {
                 ctx.Addresses.Add(new Address
