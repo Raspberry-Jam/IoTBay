@@ -19,6 +19,14 @@ public class Program
                 .UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING"))
                 .EnableSensitiveDataLogging());
         
+        builder.Services.AddDistributedMemoryCache();
+        builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromDays(1);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+        
         // Register model entity repositories for dependency injection
         builder.Services.AddScoped<AppDbContext>();
         builder.Services.AddScoped<AddressRepository>();
@@ -91,6 +99,8 @@ public class Program
 
         app.UseHttpsRedirection();
         app.UseRouting();
+
+        app.UseSession();
 
         app.UseAuthorization();
 
