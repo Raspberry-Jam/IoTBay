@@ -3,7 +3,7 @@ using System.Text;
 
 namespace IoTBay.Utils;
 
-public class HashUtils
+public static class HashUtils
 {
     private const int SaltSize = 128;
     private const int HashSize = 256;
