@@ -7,8 +7,17 @@
 <div class="container mt-4">
     <h2>@Model.Name</h2>
 
-    <img src="~/Photos/@(Model.ProductId.ToString("D6") + ".png")" alt="@Model.Name" class="img-fluid mb-3" />
+    <img src="~/Photos/@(Model.ProductId + ".png")" alt="@Model.Name" class="img-fluid mb-3" />
 
     <p><strong>Description:</strong> @Model.ShortDescription</p>
+    <p><strong>Type:</strong> @Model.Type</p>
     <p><strong>Price:</strong> $@Model.Price</p>
+    <p><strong>Stock:</strong> @Model.Stock</p>
+    <p><strong>Description:</strong> @Model.FullDescription</p>
+    
+    
 </div>
+
+<form asp-controller="Catalogue" asp-action="ProductEditDelete" asp-route-id="@(Model.ProductId)" method="get">
+    <button type="submit" class="btn btn-primary">Edit/Delete</button>
+</form>

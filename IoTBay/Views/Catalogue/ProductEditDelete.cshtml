@@ -1,19 +1,18 @@
-@model IoTBay.Models.Views.ProductAddModel
+@model IoTBay.Models.Views.ProductEditModel
 @{
-    ViewBag.Title = "Product Add Page";
+    ViewBag.Title = "Product Edit/Delete Page";
     Layout = "_Layout";
 }
 
 <div class="text-center">
-    <h1>Add Product to the Catalogue</h1>
+    <h1>Edit or Remove a Product in the Catalogue</h1>
 
-    <!-- Disable client-side validation by adding novalidate -->
-    <form asp-action="ProductAdd" method="post" novalidate>
+    <form asp-action="ProductEditDelete" method="post" novalidate>
         @Html.AntiForgeryToken()
 
-        <h3>Product Specifications</h3>
+        <input type="hidden" asp-for="ProductId" />
 
-        <!-- Summary for model-level errors (e.g., from Validate()) -->
+        <h3>Product Specifications</h3>
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
         <!-- Product Name -->
@@ -57,6 +56,12 @@
         <div></div>
         <button type="reset">Clear</button>
         <div></div>
-        <button type="submit">Add</button>
+        <button type="submit">Save Changes</button>
+    </form>
+    
+    <form asp-action="ProductDelete" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.ProductId" />
+        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this product?');">Delete</button>
     </form>
 </div>

@@ -19,8 +19,15 @@ public class CatalogueController : Controller
     
     public IActionResult Index()
     {
-        var products = _db.Products.ToList(); // load products
-        return View(products);
+
+        var products =
+            from product in _db.Products
+            where product.ProductId > 0
+            orderby product.ProductId
+            select product;
+            
+        return View(products.ToList());
+        
     }
     
     public IActionResult ProductPage(int id)
@@ -40,18 +47,19 @@ public class CatalogueController : Controller
         var categories = _db.Products
             .Select(c => new SelectListItem
             {
-                Value = c.Name, // Use Category instead of Name for better UX
-                Text = c.Name
+                Value = c.Type, // Use Category instead of Name for better UX
+                Text = c.Type
             })
             .Distinct()
             .ToList();
 
-        var model = new ProductAddViewModel
+        var model = new ProductAddModel
         {
             Name = null!,
             Price = 0,
             FullDescription = null,
-            Category = null!,
+            Stock = 0,
+            Type = null!,
             ShortDescription = null!,
             ProductCategories = categories
         };
@@ -62,7 +70,7 @@ public class CatalogueController : Controller
 // POST: /Catalogue/ProductAdd
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult ProductAdd(ProductAddViewModel model)
+    public IActionResult ProductAdd(ProductAddModel model)
     {
         if (!ModelState.IsValid)
         {
@@ -70,8 +78,8 @@ public class CatalogueController : Controller
             model.ProductCategories = _db.Products
                 .Select(c => new SelectListItem
                 {
-                    Value = c.Name,
-                    Text = c.Name
+                    Value = c.Type,
+                    Text = c.Type
                 })
                 .Distinct()
                 .ToList();
@@ -85,7 +93,8 @@ public class CatalogueController : Controller
         {
             Name = model.Name,
             Price = model.Price,
-            // Category = model.Category,
+            Type = model.Type,
+            Stock = model.Stock,
             ShortDescription = model.ShortDescription,
             FullDescription = model.FullDescription
         };
@@ -97,4 +106,73 @@ public class CatalogueController : Controller
     }
 
 
+    [HttpGet]
+    public IActionResult ProductEditDelete(int id)
+    {
+        var product = _db.Products.FirstOrDefault(p => p.ProductId == id);
+
+        if (product == null)
+        {
+            return NotFound();
+        }
+
+        var model = new ProductEditModel
+        {
+            ProductId = product.ProductId,
+            Name = product.Name,
+            Price = product.Price,
+            Stock = product.Stock,
+            FullDescription = product.FullDescription,
+            Type = product.Type,
+            ShortDescription = product.ShortDescription!
+
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult ProductEditDelete(ProductEditModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            // No need to repopulate ProductCategories anymore
+            return View(model);
+        }
+
+        var product = _db.Products.FirstOrDefault(p => p.ProductId == model.ProductId);
+        if (product == null)
+        {
+            return NotFound();
+        }
+
+        product.Name = model.Name;
+        product.Price = Math.Round((double)model.Price!, 2, MidpointRounding.AwayFromZero);
+        product.Type = model.Type;
+        product.Stock = model.Stock;
+        product.ShortDescription = model.ShortDescription;
+        product.FullDescription = model.FullDescription;
+
+        _db.SaveChanges();
+
+        return RedirectToAction("Index");
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult ProductDelete(int id)
+    {
+        var product = _db.Products.FirstOrDefault(p => p.ProductId == id);
+
+        if (product == null)
+        {
+            return NotFound();
+        }
+
+        _db.Products.Remove(product);
+        _db.SaveChanges();
+
+        return RedirectToAction("Index", "Catalogue");
+    }
 }

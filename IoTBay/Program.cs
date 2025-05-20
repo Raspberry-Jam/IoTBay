@@ -13,6 +13,9 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
         
+        builder.WebHost.UseUrls("http://0.0.0.0:8080");
+
+        
         // Add services to the container.
         builder.Services.AddControllersWithViews();
         builder.Logging.AddConsole();
@@ -37,8 +40,6 @@ public class Program
         using (var scope = app.Services.CreateScope())
         {
             var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            if (!ctx.Addresses.Any())
-            {
                 ctx.Addresses.Add(new Address
                 {
                     StreetLine1 = "123 Test Street",
@@ -57,33 +58,40 @@ public class Program
                 ctx.Products.Add(new Product
                 {
                     Name = "Keyboard",
+                    Type = "mouse",
                     Price = 32.05,
+                    Stock = 17,
                     ShortDescription = "Standard QWERTY layout USB Keyboard",
                     FullDescription = "This Keyboard is a part of IotBay's Standard Office Equipment Range and has full USB capability, is compatible with Windows, MacOS and Linux"
                 });
                 ctx.Products.Add(new Product
                 {
                     Name = "Mikhail Himself",
+                    Type = "keyboard",
                     Price = 69.69,
                     ShortDescription = "Balls",
+                    Stock = 38,
                     FullDescription = "ghj Sackthman"
                 });
                 ctx.Products.Add(new Product
                 {
                     Name = "asd Himself",
+                    Type = "keyboard",
                     Price = 22.69,
                     ShortDescription = "Balls",
+                    Stock = 8,
                     FullDescription = "Ballz Sackthman"
                 });
                 ctx.Products.Add(new Product
                 {
                     Name = "das Himself",
+                    Type = "keyboard",
                     Price = 13.69,
                     ShortDescription = "ghjghj",
+                    Stock = 551,
                     FullDescription = "ghjghjghj j"
                 });
                 ctx.SaveChanges();
-            }
         }
 
         // Configure the HTTP request pipeline.

@@ -14,13 +14,15 @@
         {
             <div class="col-md-4 mb-4">
                 <!-- Link to ProductPageController's ProductPage action -->
-                <a asp-controller="Catalogue" asp-action="ProductPage" asp-route-id="@product.ProductId.ToString("D6")" class="text-decoration-none text-dark">
+                <a asp-controller="Catalogue" asp-action="ProductPage" asp-route-id="@product.ProductId" class="text-decoration-none text-dark">
                     <div class="card h-100">
-                            <img src="~/Photos/@(product.ProductId.ToString("D6") + ".png")" alt="@product.Name" class="img-fluid mb-3" />
+                            <img src="~/Photos/@(product.ProductId + ".png")" alt="@product.Name" class="img-fluid mb-3" />
                         <div class="card-body">
                             <h5 class="card-title">@product.Name</h5>
                             <p class="card-text">@product.ShortDescription</p>
-                            <p class="card-text"><strong>Price:</strong> $@product.Price</p>
+                            <p class="card-text"><strong>Price:</strong> $@product.Price</p> 
+                            <p class="card-text"><strong>Stock on Hand:</strong>@product.Stock</p>
+                            <p class="card-text"><strong>Type:</strong>@product.Type</p>
                         </div>
                     </div>
                 </a>
