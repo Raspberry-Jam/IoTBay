@@ -12,6 +12,7 @@ public enum Role
     System = 3
 }
 
+[Serializable]
 public partial class User
 {
     public int UserId { get; }
