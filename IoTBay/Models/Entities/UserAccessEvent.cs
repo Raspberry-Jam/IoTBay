@@ -5,7 +5,7 @@ namespace IoTBay.Models.Entities;
 
 public partial class UserAccessEvent
 {
-    public int UserAccessEventId { get; set; }
+    public int UserAccessEventId { get; }
 
     public int UserId { get; set; }
 

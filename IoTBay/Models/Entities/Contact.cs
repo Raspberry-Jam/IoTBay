@@ -5,7 +5,7 @@ namespace IoTBay.Models.Entities;
 
 public partial class Contact
 {
-    public int ContactId { get; set; }
+    public int ContactId { get; }
 
     public string GivenName { get; set; } = null!;
 

@@ -5,7 +5,7 @@ namespace IoTBay.Models.Entities;
 
 public partial class Order
 {
-    public int OrderId { get; set; }
+    public int OrderId { get; }
 
     public int UserId { get; set; }
 

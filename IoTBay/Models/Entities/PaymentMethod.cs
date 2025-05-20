@@ -5,7 +5,7 @@ namespace IoTBay.Models.Entities;
 
 public partial class PaymentMethod
 {
-    public int PaymentMethodId { get; set; }
+    public int PaymentMethodId { get; }
 
     public int UserId { get; set; }
 

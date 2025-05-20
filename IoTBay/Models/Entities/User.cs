@@ -11,7 +11,7 @@ public enum Role
 
 public partial class User
 {
-    public int UserId { get; set; }
+    public int UserId { get; }
     
     [Column("role")]
     public Role Role { get; set; }
