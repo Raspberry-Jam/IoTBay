@@ -28,34 +28,31 @@ public class Program
 
         using (var scope = app.Services.CreateScope())
         {
-            var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            if (!ctx.Addresses.Any())
+            var ctx = scope.ServiceProvider.GetRequiredService<IAppDbContext>();
+            ctx.Addresses.Add(new Address
             {
-                ctx.Addresses.Add(new Address
-                {
-                    StreetLine1 = "123 Test Street",
-                    Suburb = "Springfield",
-                    State = State.ACT,
-                    Postcode = "1234"
-                });
-                ctx.Addresses.Add(new Address
-                {
-                    StreetLine1 = "245 Bug Blvd",
-                    StreetLine2 = "Unit 87",
-                    Suburb = "Woodland",
-                    State = State.NSW,
-                    Postcode = "8823"
-                });
-                ctx.Products.Add(new Product
-                {
-                    ProductId = 000001,
-                    Name = "Keyboard",
-                    Price = 32.05,
-                    ShortDescription = "Standard QWERTY layout USB Keyboard",
-                    FullDescription = "This Keyboard is a part of IotBay's Standard Office Equipment Range and has full USB capability, is compatible with Windows, MacOS and Linux"
-                });
-                ctx.SaveChanges();
-            }
+                StreetLine1 = "123 Test Street",
+                Suburb = "Springfield",
+                State = State.ACT,
+                Postcode = "1234"
+            });
+            ctx.Addresses.Add(new Address
+            {
+                StreetLine1 = "245 Bug Blvd",
+                StreetLine2 = "Unit 87",
+                Suburb = "Woodland",
+                State = State.NSW,
+                Postcode = "8823"
+            });
+            ctx.Products.Add(new Product
+            {
+                Name = "Keyboard",
+                Type = "Keyboard",
+                Price = 32.05,
+                ShortDescription = "Standard QWERTY layout USB Keyboard",
+                FullDescription = "This Keyboard is a part of IotBay's Standard Office Equipment Range and has full USB capability, is compatible with Windows, MacOS and Linux"
+            });
+            ctx.SaveChanges();
         }
 
         // Configure the HTTP request pipeline.
