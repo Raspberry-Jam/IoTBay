@@ -1,0 +1,14 @@
+@using IoTBay.Models.Entities
+@model IoTBay.Models.DTOs.UserSessionDto?
+
+@if (Model != null && Model.Role != Role.Anonymous)
+{
+    <span class="navbar-text"> Welcome, @Model.GivenName</span>
+    <a class="nav-link" asp-controller="Home" asp-action="Index">Profile Settings</a>
+    <a class="nav-link" asp-controller="Home" asp-action="Index">Logout</a>
+}
+else
+{
+    <span class="navbar-text">Welcome honoured guest</span>
+    <a class="nav-link" asp-controller="User" asp-action="Index">Login</a>
+}
