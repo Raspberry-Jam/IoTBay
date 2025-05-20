@@ -5,6 +5,8 @@
 @model List<IoTBay.Models.Entities.Product>
 
 <h2 class="text-center mb-4">Product Catalogue</h2>
+<a asp-controller="Catalogue" asp-action="ProductAdd">Add New Product!</a>
+<div></div>
 
 <div class="container">
     <div class="row">
@@ -12,7 +14,7 @@
         {
             <div class="col-md-4 mb-4">
                 <!-- Link to ProductPageController's ProductPage action -->
-                <a asp-controller="ProductPage" asp-action="ProductPage" asp-route-id="@product.ProductId.ToString("D6")" class="text-decoration-none text-dark">
+                <a asp-controller="Catalogue" asp-action="ProductPage" asp-route-id="@product.ProductId.ToString("D6")" class="text-decoration-none text-dark">
                     <div class="card h-100">
                             <img src="~/Photos/@(product.ProductId.ToString("D6") + ".png")" alt="@product.Name" class="img-fluid mb-3" />
                         <div class="card-body">

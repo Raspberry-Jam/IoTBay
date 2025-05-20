@@ -42,7 +42,6 @@ public class Program
                 });
                 ctx.Products.Add(new Product
                 {
-                    ProductId = 000001,
                     Name = "Keyboard",
                     Price = 32.05,
                     ShortDescription = "Standard QWERTY layout USB Keyboard",
@@ -50,11 +49,24 @@ public class Program
                 });
                 ctx.Products.Add(new Product
                 {
-                    ProductId = 000002,
                     Name = "Mikhail Himself",
                     Price = 69.69,
                     ShortDescription = "Balls",
+                    FullDescription = "ghj Sackthman"
+                });
+                ctx.Products.Add(new Product
+                {
+                    Name = "asd Himself",
+                    Price = 22.69,
+                    ShortDescription = "Balls",
                     FullDescription = "Ballz Sackthman"
+                });
+                ctx.Products.Add(new Product
+                {
+                    Name = "das Himself",
+                    Price = 13.69,
+                    ShortDescription = "ghjghj",
+                    FullDescription = "ghjghjghj j"
                 });
                 ctx.SaveChanges();
             }
