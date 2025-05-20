@@ -21,7 +21,15 @@ public class Program
                 .UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING"))
                 .EnableSensitiveDataLogging());
         
+        // Register model entity repositories for dependency injection
         builder.Services.AddScoped<IAppDbContext, AppDbContext>();
+        builder.Services.AddScoped<IAddressRepository, AddressRepository>();
+        builder.Services.AddScoped<IContactRepository, ContactRepository>();
+        builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+        builder.Services.AddScoped<IPaymentMethod, PaymentMethodRepository>();
+        builder.Services.AddScoped<IProductRepository, ProductRepository>();
+        builder.Services.AddScoped<IShipmentMethodRepository, ShipmentMethodRepository>();
+        builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
 
         var app = builder.Build();
