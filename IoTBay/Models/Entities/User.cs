@@ -6,7 +6,10 @@ namespace IoTBay.Models.Entities;
 
 public enum Role
 {
-    Customer, Staff, System, Anonymous
+    Anonymous = 0, 
+    Customer = 1, 
+    Staff = 2, 
+    System = 3
 }
 
 public partial class User
