@@ -1,4 +1,7 @@
-﻿namespace IoTBay.Models.Entities;
+﻿using System;
+using System.Collections.Generic;
+
+namespace IoTBay.Models.Entities;
 
 public partial class Product
 {
@@ -6,21 +9,19 @@ public partial class Product
 
     public string Name { get; set; } = null!;
 
+    public string Type { get; set; } = null!;
+
     public double? Price { get; set; }
+
+    public int Stock { get; set; }
 
     public string? ShortDescription { get; set; }
 
     public string? FullDescription { get; set; }
 
-    public string? ThumbnailUri { get; set; }
-
-    public string? GalleryFolderUri { get; set; }
-
-    public virtual ICollection<CartProduct> CartProducts { get; set; } = new List<CartProduct>();
-
     public virtual ICollection<OrderProduct> OrderProducts { get; set; } = new List<OrderProduct>();
 
-    public virtual ICollection<StoreProductStock> StoreProductStocks { get; set; } = new List<StoreProductStock>();
+    public virtual ICollection<UserCartProduct> UserCartProducts { get; set; } = new List<UserCartProduct>();
 
-    public virtual ICollection<Catalogue> Catalogues { get; set; } = new List<Catalogue>();
+    public virtual ICollection<Supplier> Suppliers { get; set; } = new List<Supplier>();
 }
