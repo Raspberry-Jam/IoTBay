@@ -19,7 +19,8 @@ public class HomeController : Controller
     public IActionResult Index()
     {
         var data = _db.Addresses.ToList();
-        return View(data);
+        var counterModel = new TestViewModel { Counter = 0, Addresses = data };
+        return View(counterModel);
     }
 
     public IActionResult Privacy()
@@ -31,5 +32,13 @@ public class HomeController : Controller
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+    
+    [HttpPost]
+    public IActionResult IncreaseCounter(TestViewModel model)
+    {
+        model.Counter++;
+        model.Addresses = _db.Addresses.ToList();
+        return View("Index", model);
     }
 }
