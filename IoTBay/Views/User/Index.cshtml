@@ -16,7 +16,9 @@
         }
         <input asp-for="Email" type="email" placeholder="Email" required/> <br/>
         <input asp-for="Password" type="password" placeholder="Password" required/> <br/>
-        <button type="submit">Log In</button>
+        <br/>
+        <button type="submit" class="btn btn-primary">Log In</button>
     </form>
+    <br/>
     <p>Don't have an account? <a asp-action="Register">Register here</a>.</p> <!-- Send the user to the Register action -->
 </div>
