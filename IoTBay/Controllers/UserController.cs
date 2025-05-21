@@ -101,6 +101,7 @@ public class UserController(ILogger<UserController> logger, UserRepository userR
     [HttpPost]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
+        // Check error state of the model, and redirect to index if the model is malformed
         if (!ModelState.IsValid)
         {
             foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
@@ -112,20 +113,24 @@ public class UserController(ILogger<UserController> logger, UserRepository userR
             return RedirectToAction("Index");
         }
 
+        // Check that the user email exists
         var user = await userRepository.GetByEmail(model.Email);
         if (user == null)
         {
+            // Send back an error message to the login page if the email does not match to any user
             ModelState.AddModelError("incorrectLogin", "Incorrect email or password. Please try again.");
             return View("Index", model);
         }
 
-        // Use not-null guarantees because if an email match has returned, then the row must also have a password as the user isn't anonymous
+        // Hash the password using the stored database salt, and compare to the stored hash to see if it is correct
         if (!HashUtils.VerifyPassword(user.PasswordHash!, model.Password, user.PasswordSalt!))
         {
+            // Send back an error message to the login page if the password is incorrect for this user
             ModelState.AddModelError("incorrectLogin","Incorrect email or password. Please try again.");
             return View("Index", model);
         }
 
+        // Create a UserSessionDto instance to track the user's browser session
         var userSessionDto = new UserSessionDto
         {
             UserId = user.UserId,
@@ -133,12 +138,18 @@ public class UserController(ILogger<UserController> logger, UserRepository userR
             Role = user.Role
         };
         
+        // Set the session data
         SessionUtils.SetObjectAsJson(HttpContext.Session, "currentUser", userSessionDto);
 
+        // Send the user to the welcome page
         return View("Welcome", user);
     }
     
     // Allow both HttpGet and HttpPost
+    /// <summary>
+    /// Clear the session data of this user, logging them out. Only allow this action if the user is already logged in.
+    /// </summary>
+    /// <returns>Home Index View</returns>
     [AuthenticationFilter]
     public IActionResult Logout()
     {

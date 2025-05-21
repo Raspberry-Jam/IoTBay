@@ -9,6 +9,20 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        /*
+         * NOTE: Since the current deployment of this application is ephemeral and the persistence storage is wiped
+         * with each run of the containers, this causes issues with the built-in ASP.NET Core Authentication features.
+         *
+         * ASP.NET Core uses a system called a "Key Ring" in order to encrypt user session data on the server, and gives
+         * a public key to the user, which is stored in the browser cookies. When the containers restart, this key ring
+         * has been deleted and thus the private key for the user's browser cookie is lost. Since the browser still
+         * holds onto this old cookie and sends it to the web application with each request, this causes the key ring
+         * to warn the server admin (by printing an error in the log) that the browser cookie could not be "unprotected".
+         *
+         * This is not an unhandled error. This error is handled by printing it to the console, and invalidating the
+         * authentication request of an outdated cookie.
+         */
+        
         var builder = WebApplication.CreateBuilder(args);
         
         // Add services to the container.
@@ -19,6 +33,7 @@ public class Program
                 .UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING"))
                 .EnableSensitiveDataLogging());
         
+        // Enable session support
         builder.Services.AddDistributedMemoryCache();
         builder.Services.AddSession(options =>
             {
@@ -40,6 +55,7 @@ public class Program
 
         var app = builder.Build();
 
+        // Insert test data into the database
         using (var scope = app.Services.CreateScope())
         {
             var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();

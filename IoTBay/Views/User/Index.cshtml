@@ -8,15 +8,15 @@
 <div class="text-center">
     <h2>Log In</h2>
     <form asp-action="Login" method="post">
-        @if (ViewData.ModelState["incorrectLogin"]?.Errors.Count > 0)
+        @if (ViewData.ModelState["incorrectLogin"]?.Errors.Count > 0) // Check for any errors with the key "incorrectLogin"
         {
             <div class="alert alert-warning">
-                <p>@ViewData.ModelState["incorrectLogin"]?.Errors[0].ErrorMessage</p>
+                <p>@ViewData.ModelState["incorrectLogin"]?.Errors[0].ErrorMessage</p> <!-- Display the first (likely only) error -->
             </div>
         }
         <input asp-for="Email" type="email" placeholder="Email" required/> <br/>
         <input asp-for="Password" type="password" placeholder="Password" required/> <br/>
         <button type="submit">Log In</button>
     </form>
-    <p>Don't have an account? <a asp-action="Register">Register here</a>.</p>
+    <p>Don't have an account? <a asp-action="Register">Register here</a>.</p> <!-- Send the user to the Register action -->
 </div>
