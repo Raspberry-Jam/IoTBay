@@ -6,12 +6,16 @@ namespace IoTBay.Models.Entities;
 
 public enum Role
 {
-    Customer, Staff, System, Anonymous
+    Anonymous = 0, 
+    Customer = 1, 
+    Staff = 2, 
+    System = 3
 }
 
+[Serializable]
 public partial class User
 {
-    public int UserId { get; set; }
+    public int UserId { get; }
     
     [Column("role")]
     public Role Role { get; set; }

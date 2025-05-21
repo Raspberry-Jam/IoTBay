@@ -1,0 +1,47 @@
+@model IoTBay.Models.Views.RegisterViewModel
+@{
+    ViewBag.Title = "Register New User";
+    Layout = "_Layout";
+}
+
+<div class="text-center">
+    <h1>Register New User</h1>
+    @if (ViewData.ModelState.Values.SelectMany(v => v.Errors).Any()) // Check if the model has any errors
+    {
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(e => e.Errors))
+        {
+            <div class="alert alert-warning">
+                <p>@error.ErrorMessage</p> <!-- Render all of those errors -->
+            </div>
+        }
+    }
+    <form asp-action="Register" method="post">
+        <span asp-validation-for="Contact.Email" class="text-danger"></span>
+        <input asp-for="Contact.Email" type="email" placeholder="Email Address" required/> <br/>
+        <input asp-for="Contact.GivenName" type="text" placeholder="Given Name" required/> <br/>
+        <input asp-for="Contact.Surname" type="text" placeholder="Surname (Optional)"/> <br/>
+        <br/>
+        <input asp-for="Password" type="password" placeholder="Password" required/> <br/>
+        <input asp-for="ConfirmPassword" type="password" placeholder="Confirm Password" required/> <br/>
+        
+        @*<h3>Address</h3>
+        <input asp-for="Address.StreetLine1" type="text" placeholder="Street Line 1" /> <br/>
+        <input asp-for="Address.StreetLine2" type="text" placeholder="Street Line 2" /> <br/>
+        @Html.DropDownListFor(m => m.Address.State, Model.States, new { @class = "form-control" })
+        <input asp-for="Address.Postcode" type="text" placeholder="Postcode" /> <br/>
+        
+        @if (ViewData.ModelState["partialAddress"]?.Errors.Count > 0)
+        {
+            <div class="alert alert-warning">
+                <p>@ViewData.ModelState["partialAddress"]?.Errors[0].ErrorMessage</p>
+                <label>
+                    <input type="checkbox" asp-for="ProceedWithoutAddress" />
+                    Proceed Without Address
+                </label>
+            </div>
+        }*@
+        
+        <br/>
+        <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+</div>

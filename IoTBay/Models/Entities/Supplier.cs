@@ -5,7 +5,7 @@ namespace IoTBay.Models.Entities;
 
 public partial class Supplier
 {
-    public int SupplierId { get; set; }
+    public int SupplierId { get; }
 
     public int ContactId { get; set; }
 

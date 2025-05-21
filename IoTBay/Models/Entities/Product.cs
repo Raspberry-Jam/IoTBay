@@ -5,7 +5,7 @@ namespace IoTBay.Models.Entities;
 
 public partial class Product
 {
-    public int ProductId { get; set; }
+    public int ProductId { get; }
 
     public string Name { get; set; } = null!;
 

@@ -1,8 +1,6 @@
-using IoTBay.DataAccess;
-using IoTBay.DataAccess.Implementations;
-using IoTBay.DataAccess.Interfaces;
 using IoTBay.Models;
 using IoTBay.Models.Entities;
+using IoTBay.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace IoTBay;
@@ -11,6 +9,20 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        /*
+         * NOTE: Since the current deployment of this application is ephemeral and the persistence storage is wiped
+         * with each run of the containers, this causes issues with the built-in ASP.NET Core Authentication features.
+         *
+         * ASP.NET Core uses a system called a "Key Ring" in order to encrypt user session data on the server, and gives
+         * a public key to the user, which is stored in the browser cookies. When the containers restart, this key ring
+         * has been deleted and thus the private key for the user's browser cookie is lost. Since the browser still
+         * holds onto this old cookie and sends it to the web application with each request, this causes the key ring
+         * to warn the server admin (by printing an error in the log) that the browser cookie could not be "unprotected".
+         *
+         * This is not an unhandled error. This error is handled by printing it to the console, and invalidating the
+         * authentication request of an outdated cookie.
+         */
+        
         var builder = WebApplication.CreateBuilder(args);
         
         builder.WebHost.UseUrls("http://0.0.0.0:8080");
@@ -24,22 +36,103 @@ public class Program
                 .UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING"))
                 .EnableSensitiveDataLogging());
         
+        // Enable session support
+        builder.Services.AddDistributedMemoryCache();
+        builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromDays(1);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+        
         // Register model entity repositories for dependency injection
-        builder.Services.AddScoped<IAppDbContext, AppDbContext>();
-        builder.Services.AddScoped<IAddressRepository, AddressRepository>();
-        builder.Services.AddScoped<IContactRepository, ContactRepository>();
-        builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-        builder.Services.AddScoped<IPaymentMethod, PaymentMethodRepository>();
-        builder.Services.AddScoped<IProductRepository, ProductRepository>();
-        builder.Services.AddScoped<IShipmentMethodRepository, ShipmentMethodRepository>();
-        builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
-        builder.Services.AddScoped<IUserRepository, UserRepository>();
+        builder.Services.AddScoped<AppDbContext>();
+        builder.Services.AddScoped<AddressRepository>();
+        builder.Services.AddScoped<ContactRepository>();
+        builder.Services.AddScoped<OrderRepository>();
+        builder.Services.AddScoped<PaymentMethodRepository>();
+        builder.Services.AddScoped<ProductRepository>();
+        builder.Services.AddScoped<ShipmentMethodRepository>();
+        builder.Services.AddScoped<SupplierRepository>();
+        builder.Services.AddScoped<UserRepository>();
 
         var app = builder.Build();
 
+        // Insert test data into the database
         using (var scope = app.Services.CreateScope())
         {
             var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var addressQuery = from a in ctx.Addresses
+                where a.AddressId >= 1
+                select a;
+            var productQuery = from p in ctx.Products
+                where p.ProductId >= 1
+                select p;
+            var userQuery = from u in ctx.Users
+                where u.UserId >= 1
+                select u;
+            var orderQuery = from o in ctx.Orders
+                where o.OrderId >= 1
+                select o;
+
+            if (!productQuery.Any())
+            {
+                var product = new Product
+                {
+                    Name = "Keyboard",
+                    Type = "Keyboard",
+                    Price = 32.05,
+                    ShortDescription = "Standard QWERTY layout USB Keyboard",
+                    FullDescription =
+                        "This Keyboard is a part of IotBay's Standard Office Equipment Range and has full USB capability, is compatible with Windows, MacOS and Linux"
+                };
+                ctx.Products.Add(product);
+                if (!userQuery.Any())
+                {
+                    var contact = new Contact
+                    {
+                        Email = "test@test.com",
+                        GivenName = "Tester",
+                        Surname = "Debugger"
+                    };
+                    ctx.Contacts.Add(contact);
+                    var passwordHash = Utils.HashUtils.HashPassword("password", out var salt);
+                    var user = new User
+                    {
+                        PasswordHash = passwordHash,
+                        PasswordSalt = salt,
+                        Contact = contact,
+                        Role = Role.Customer
+                    };
+                    ctx.Users.Add(user);
+                    if (!orderQuery.Any())
+                    {
+                        var order = new Order
+                        {
+                            User = user,
+                            ShipmentMethodId = -1,
+                            PaymentMethodId = -1,
+                            OrderDate = DateOnly.FromDateTime(DateTime.Now)
+                        };
+                        order.OrderProducts = new List<OrderProduct>
+                        {
+                            new() {
+                                Order = order,
+                                Product = product,
+                                Quantity = 13
+                            }
+                        };
+                        ctx.Orders.Add(order);
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Products already exist");
+            }
+            
+            if (!addressQuery.Any())
+            {
                 ctx.Addresses.Add(new Address
                 {
                     StreetLine1 = "123 Test Street",
@@ -55,43 +148,12 @@ public class Program
                     State = State.NSW,
                     Postcode = "8823"
                 });
-                ctx.Products.Add(new Product
-                {
-                    Name = "Keyboard",
-                    Type = "mouse",
-                    Price = 32.05,
-                    Stock = 17,
-                    ShortDescription = "Standard QWERTY layout USB Keyboard",
-                    FullDescription = "This Keyboard is a part of IotBay's Standard Office Equipment Range and has full USB capability, is compatible with Windows, MacOS and Linux"
-                });
-                ctx.Products.Add(new Product
-                {
-                    Name = "Mikhail Himself",
-                    Type = "keyboard",
-                    Price = 69.69,
-                    ShortDescription = "Balls",
-                    Stock = 38,
-                    FullDescription = "ghj Sackthman"
-                });
-                ctx.Products.Add(new Product
-                {
-                    Name = "asd Himself",
-                    Type = "keyboard",
-                    Price = 22.69,
-                    ShortDescription = "Balls",
-                    Stock = 8,
-                    FullDescription = "Ballz Sackthman"
-                });
-                ctx.Products.Add(new Product
-                {
-                    Name = "das Himself",
-                    Type = "keyboard",
-                    Price = 13.69,
-                    ShortDescription = "ghjghj",
-                    Stock = 551,
-                    FullDescription = "ghjghjghj j"
-                });
-                ctx.SaveChanges();
+            } 
+            else
+            {
+                Console.WriteLine("Addresses already exist");
+            }
+            ctx.SaveChanges();
         }
 
         // Configure the HTTP request pipeline.
@@ -104,6 +166,8 @@ public class Program
 
         app.UseHttpsRedirection();
         app.UseRouting();
+
+        app.UseSession();
 
         app.UseAuthorization();
 

@@ -11,7 +11,7 @@ public enum State
 
 public partial class Address
 {
-    public int AddressId { get; set; }
+    public int AddressId { get; }
 
     public string? StreetLine1 { get; set; }
 
