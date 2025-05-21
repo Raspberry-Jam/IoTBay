@@ -1,23 +1,27 @@
-@model IoTBay.Models.Entities.Product
+@using IoTBay.Models.Entities
+@model IoTBay.Models.Views.ProductPageViewModel
 
 @{
-    ViewData["Title"] = "Product Page - " + Model.Name;
+    ViewData["Title"] = "Product Page - " + Model.Product.Name;
 }
 
 <div class="container mt-4">
-    <h2>@Model.Name</h2>
+    <h2>@Model.Product.Name</h2>
 
-    <img src="~/Photos/@(Model.ProductId + ".png")" alt="@Model.Name" class="img-fluid mb-3" />
+    <img src="~/Photos/@(Model.Product.ProductId + ".png")" alt="@Model.Product.Name" class="img-fluid mb-3" />
 
-    <p><strong>Description:</strong> @Model.ShortDescription</p>
-    <p><strong>Type:</strong> @Model.Type</p>
-    <p><strong>Price:</strong> $@Model.Price</p>
-    <p><strong>Stock:</strong> @Model.Stock</p>
-    <p><strong>Description:</strong> @Model.FullDescription</p>
+    <p><strong>Description:</strong> @Model.Product.ShortDescription</p>
+    <p><strong>Type:</strong> @Model.Product.Type</p>
+    <p><strong>Price:</strong> $@Model.Product.Price</p>
+    <p><strong>Stock:</strong> @Model.Product.Stock</p>
+    <p><strong>Description:</strong> @Model.Product.FullDescription</p>
     
     
 </div>
 
-<form asp-controller="Catalogue" asp-action="ProductEditDelete" asp-route-id="@(Model.ProductId)" method="get">
-    <button type="submit" class="btn btn-primary">Edit/Delete</button>
-</form>
+@if (Model.UserRole > Role.Staff)
+{
+    <form asp-controller="Catalogue" asp-action="ProductEditDelete" asp-route-id="@(Model.Product.ProductId)" method="get">
+        <button type="submit" class="btn btn-primary">Edit/Delete</button>
+    </form>    
+}
