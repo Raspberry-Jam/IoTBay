@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IoTBay.Controllers;
 
-public class UserController(ILogger<UserController> logger, UserRepository userRepository)
+public class UserController(ILogger<UserController> logger, UserRepository userRepository, OrderRepository orderRepository)
     : Controller
 {
     /// <summary>
@@ -214,6 +214,22 @@ public class UserController(ILogger<UserController> logger, UserRepository userR
                 EventTime = e.EventTime,
                 EventType = e.EventType
             });
+
+        var ordersShallow = user.Orders;
+
+        var orders = await Task.WhenAll(ordersShallow.Select(o => orderRepository.DeepLoadOrderProducts(o)));
+
+        var userOrders = orders.Select(o =>
+        {
+            var sum = o.OrderProducts.Sum(op => op.Product.Price * op.Quantity) ?? 0;
+            return new UserOrderViewModel
+            {
+                OrderId = o.OrderId,
+                OrderDate = o.OrderDate,
+                SentDate = o.SentDate,
+                TotalPrice = sum
+            };
+        });
         
         // Create a settings view model and populate it with the important data
         var model = new UserSettingsViewModel
@@ -223,6 +239,7 @@ public class UserController(ILogger<UserController> logger, UserRepository userR
             Surname = user.Contact!.Surname,
             PhoneNumber = user.Contact!.PhoneNumber,
             AccessEvents = accessEvents,
+            Orders = userOrders,
             UserId = user.UserId
         };
         
