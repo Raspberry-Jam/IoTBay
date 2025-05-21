@@ -5,20 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IoTBay.Controllers;
 
-public class HomeController : Controller
+public class HomeController(ILogger<HomeController> logger, AppDbContext db) : Controller
 {
-    private readonly ILogger<HomeController> _logger;
-    private readonly AppDbContext _db;
-
-    public HomeController(ILogger<HomeController> logger, AppDbContext db)
-    {
-        _logger = logger;
-        _db = db;
-    }
-
     public IActionResult Index()
     {
-        var data = _db.Addresses.ToList();
+        var data = db.Addresses.ToList();
         var counterModel = new TestViewModel { Counter = 0, Addresses = data };
         return View(counterModel);
     }
@@ -38,7 +29,7 @@ public class HomeController : Controller
     public IActionResult IncreaseCounter(TestViewModel model)
     {
         model.Counter++;
-        model.Addresses = _db.Addresses.ToList();
+        model.Addresses = db.Addresses.ToList();
         return View("Index", model);
     }
 }
