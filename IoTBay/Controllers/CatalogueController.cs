@@ -92,7 +92,8 @@ public class CatalogueController(ILogger<CatalogueController> logger, AppDbConte
             Stock = 0,
             Type = null!,
             ShortDescription = null!,
-            ProductCategories = categories
+            ProductCategories = categories,
+            ImageFile = null
         };
 
         return View(model);
@@ -101,11 +102,36 @@ public class CatalogueController(ILogger<CatalogueController> logger, AppDbConte
 // POST: /Catalogue/ProductAdd
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult ProductAdd(ProductAddModel model)
+    public IActionResult ProductAdd(ProductAddModel model, string action)
     {
+        if (action == "clear")
+        {
+            // Return an empty model with the category list reset
+            var emptyModel = new ProductAddModel
+            {
+                ProductCategories = db.Products
+                    .Select(c => new SelectListItem
+                    {
+                        Value = c.Type,
+                        Text = c.Type
+                    })
+                    .Distinct()
+                    .ToList(),
+                Name = null!,
+                Type = null!,
+                Price = 0,
+                ShortDescription = null!,
+                ImageFile = null!
+            };
+
+            ModelState.Clear(); // Clear any previous errors or data
+
+            return View(emptyModel);
+        }
+
+        // Default behavior: handle actual product submission
         if (!ModelState.IsValid)
         {
-            // Repopulate categories in case validation fails
             model.ProductCategories = db.Products
                 .Select(c => new SelectListItem
                 {
@@ -132,11 +158,28 @@ public class CatalogueController(ILogger<CatalogueController> logger, AppDbConte
 
         db.Products.Add(product);
         db.SaveChanges();
+        
+        if (model.ImageFile.Length > 0)
+        {
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Photos");
+            Directory.CreateDirectory(uploadsFolder); // Ensure folder exists
+
+            var fileExtension = Path.GetExtension(model.ImageFile.FileName); // e.g., .jpg or .png
+            var fileName = $"{product.ProductId}{fileExtension}";
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                model.ImageFile.CopyTo(stream);
+            }
+        }
 
         return RedirectToAction("Index");
     }
 
+
     [HttpGet]
+    [AuthenticationFilter(Role.Staff)]
     public IActionResult ProductEditDelete(int id)
     {
         var product = db.Products.FirstOrDefault(p => p.ProductId == id);
@@ -161,7 +204,7 @@ public class CatalogueController(ILogger<CatalogueController> logger, AppDbConte
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
+    [AuthenticationFilter(Role.Staff)]
     public IActionResult ProductEditDelete(ProductEditModel model)
     {
         if (!ModelState.IsValid)

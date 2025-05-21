@@ -8,8 +8,9 @@
     <h1>Add Product to the Catalogue</h1>
 
     <!-- Disable client-side validation by adding novalidate -->
-    <form asp-action="ProductAdd" method="post" novalidate>
-        @Html.AntiForgeryToken()
+    <form asp-action="ProductAdd" method="post" enctype="multipart/form-data" novalidate>
+
+
 
         <h3>Product Specifications</h3>
 
@@ -51,11 +52,16 @@
         <textarea asp-for="FullDescription" placeholder="Full Description" class="form-control" required></textarea>
         <span asp-validation-for="FullDescription" class="text-danger"></span>
         <br />
+        
+        <label>Upload Product Image:</label>
+        <input asp-for="ImageFile" type="file" accept="image/*" class="form-control" />
+        <span asp-validation-for="ImageFile" class="text-danger"></span>
+        <br />
 
         <!-- Buttons -->
         <button type="button" onclick="location.href='@Url.Action("Index", "Catalogue")'">Home</button>
         <div></div>
-        <button type="reset">Clear</button>
+        <button type="submit" name="action" value="clear">Clear</button>
         <div></div>
         <button type="submit">Add</button>
     </form>

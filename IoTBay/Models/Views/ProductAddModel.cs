@@ -25,6 +25,10 @@ public class ProductAddModel : IValidatableObject
 
     [Required]
     public string? FullDescription { get; set; }
+    
+    [Display(Name = "Upload Product Image")]
+    public required IFormFile ImageFile { get; set; }
+    
 
     
     // Dropdown source
