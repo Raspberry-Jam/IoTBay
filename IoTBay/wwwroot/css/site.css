@@ -29,3 +29,30 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+.table-responsive-scrollable {
+  max-height: 350px;
+  max-width: 50%;
+  overflow-y: auto;
+  border: 1px solid #474747;
+  border-radius: .25rem;
+}
+
+.table-responsive-scrollable thead {
+  position: sticky;
+  top: 0;
+  background-color: #343a40;
+  color: white;
+  z-index: 10;
+}
+
+.table-responsive-scrollable th, .table-responsive-scrollable td {
+  padding: .75rem;
+  vertical-align: top;
+  border-top: 1px solid #474747;
+}
+
+.table-responsive-scrollable table {
+  width: 100%;
+  table-layout: fixed;
+}
