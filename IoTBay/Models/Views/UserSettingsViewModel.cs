@@ -30,6 +30,8 @@ public class UserSettingsViewModel : IValidatableObject
     
     public IEnumerable<UserAccessEventViewModel>? AccessEvents { get; set; }
     
+    public IEnumerable<UserOrderViewModel>? Orders { get; set; }
+    
     public int UserId { get; set; }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
