@@ -7,21 +7,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IoTBay.Controllers;
 
-public class CatalogueController : Controller
+public class CatalogueController(ILogger<CatalogueController> logger, AppDbContext db) : Controller
 {
-    private readonly ILogger<CatalogueController> _logger;
-    private readonly AppDbContext _db;
-
-    public CatalogueController(ILogger<CatalogueController> logger, AppDbContext db)
-    {
-        _logger = logger;
-        _db = db;
-    }
-
     public IActionResult Index(string? searchQuery, string? selectedCategory, decimal? minPrice, decimal? maxPrice)
     {
         // Get all products from the database
-        var allProducts = from product in _db.Products
+        var allProducts = from product in db.Products
             where product.ProductId > 0
             orderby product.ProductId
             select product;
@@ -41,7 +32,7 @@ public class CatalogueController : Controller
             (!minPrice.HasValue || p.Price >= (double?)minPrice) &&
             (!maxPrice.HasValue || p.Price <= (double?)maxPrice)
         );
-        _logger.LogInformation(query.ToQueryString());
+        logger.LogInformation(query.ToQueryString());
         var filtered = query.ToList();
 
         // Map the filtered products to ProductEditModel
@@ -73,7 +64,7 @@ public class CatalogueController : Controller
     public IActionResult ProductPage(int id)
     {
         var query =
-            from currentProduct in _db.Products
+            from currentProduct in db.Products
             where currentProduct.ProductId == id
             select currentProduct;
 
@@ -84,7 +75,7 @@ public class CatalogueController : Controller
     [HttpGet]
     public IActionResult ProductAdd()
     {
-        var categories = _db.Products
+        var categories = db.Products
             .Select(c => new SelectListItem
             {
                 Value = c.Type, // Use Category instead of Name for better UX
@@ -115,7 +106,7 @@ public class CatalogueController : Controller
         if (!ModelState.IsValid)
         {
             // Repopulate categories in case validation fails
-            model.ProductCategories = _db.Products
+            model.ProductCategories = db.Products
                 .Select(c => new SelectListItem
                 {
                     Value = c.Type,
@@ -139,8 +130,8 @@ public class CatalogueController : Controller
             FullDescription = model.FullDescription
         };
 
-        _db.Products.Add(product);
-        _db.SaveChanges();
+        db.Products.Add(product);
+        db.SaveChanges();
 
         return RedirectToAction("Index");
     }
@@ -148,7 +139,7 @@ public class CatalogueController : Controller
     [HttpGet]
     public IActionResult ProductEditDelete(int id)
     {
-        var product = _db.Products.FirstOrDefault(p => p.ProductId == id);
+        var product = db.Products.FirstOrDefault(p => p.ProductId == id);
 
         if (product == null)
         {
@@ -179,7 +170,7 @@ public class CatalogueController : Controller
             return View(model);
         }
 
-        var product = _db.Products.FirstOrDefault(p => p.ProductId == model.ProductId);
+        var product = db.Products.FirstOrDefault(p => p.ProductId == model.ProductId);
         if (product == null)
         {
             return NotFound();
@@ -192,7 +183,7 @@ public class CatalogueController : Controller
         product.ShortDescription = model.ShortDescription;
         product.FullDescription = model.FullDescription;
 
-        _db.SaveChanges();
+        db.SaveChanges();
 
         return RedirectToAction("Index");
     }
@@ -201,15 +192,15 @@ public class CatalogueController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult ProductDelete(int id)
     {
-        var product = _db.Products.FirstOrDefault(p => p.ProductId == id);
+        var product = db.Products.FirstOrDefault(p => p.ProductId == id);
 
         if (product == null)
         {
             return NotFound();
         }
 
-        _db.Products.Remove(product);
-        _db.SaveChanges();
+        db.Products.Remove(product);
+        db.SaveChanges();
 
         return RedirectToAction("Index", "Catalogue");
     }
