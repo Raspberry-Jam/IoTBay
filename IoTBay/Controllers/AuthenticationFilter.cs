@@ -25,12 +25,12 @@ public class AuthenticationFilter(Role userRole = Role.Customer) : ActionFilterA
         // If the user is trying to access something that requires them to be logged in, redirect them to the login
         // page. This is used most effectively by tagging an action with [AuthenticationFilter] with no specified role,
         // falling back on the default Customer role.
-        if (currentUser == null || currentUser.Role == Role.Anonymous)
+        if (currentUser == null)
         {
             context.Result = new RedirectToRouteResult(new RouteValueDictionary
             {
                 { "controller", "User" },
-                { "action", "Login" }    
+                { "action", "Index" }    
             });
             return base.OnActionExecutionAsync(context, next);
         }
