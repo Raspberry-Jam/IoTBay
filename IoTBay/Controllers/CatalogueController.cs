@@ -17,7 +17,7 @@ public class CatalogueController : Controller
         _logger = logger;
         _db = db;
     }
-    
+
     public IActionResult Index(string? searchQuery, string? selectedCategory, decimal? minPrice, decimal? maxPrice)
     {
         // Get all products from the database
@@ -43,7 +43,7 @@ public class CatalogueController : Controller
         );
         _logger.LogInformation(query.ToQueryString());
         var filtered = query.ToList();
-        
+
         // Map the filtered products to ProductEditModel
         var productEditModels = filtered.Select(p => new ProductEditModel
         {
@@ -70,19 +70,13 @@ public class CatalogueController : Controller
         return View(viewModel);
     }
 
-
-    
-    
-    
-    
-    
     public IActionResult ProductPage(int id)
     {
         var query =
             from currentProduct in _db.Products
             where currentProduct.ProductId == id
             select currentProduct;
-        
+
         return View(query.SingleOrDefault());
     }
 
@@ -132,9 +126,9 @@ public class CatalogueController : Controller
 
             return View(model);
         }
-        
+
         model.Price = Math.Round(model.Price, 2, MidpointRounding.AwayFromZero);
-        
+
         var product = new Product
         {
             Name = model.Name,
@@ -150,7 +144,6 @@ public class CatalogueController : Controller
 
         return RedirectToAction("Index");
     }
-
 
     [HttpGet]
     public IActionResult ProductEditDelete(int id)
@@ -171,7 +164,6 @@ public class CatalogueController : Controller
             FullDescription = product.FullDescription,
             Type = product.Type,
             ShortDescription = product.ShortDescription!
-
         };
 
         return View(model);
