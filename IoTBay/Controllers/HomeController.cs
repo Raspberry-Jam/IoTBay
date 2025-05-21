@@ -25,6 +25,7 @@ public class HomeController(ILogger<HomeController> logger, AppDbContext db) : C
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
     
+    public IActionResult AccessDenied() => View();
     [HttpPost]
     public IActionResult IncreaseCounter(TestViewModel model)
     {
