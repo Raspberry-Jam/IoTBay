@@ -54,7 +54,32 @@
     <p>TODO: Add shipping details editing here</p>
 
     <h5>Order History</h5>
-    <p>TODO: Add order history viewing here</p>
+    <div class="table-responsive-scrollable">
+        <table class="table table-striped table-hover table-bordered">
+            <thead class="table-dark">
+            <tr>
+                <th>Order ID</th>
+                <th>Order Date</th>
+                <th>Sent Date</th>
+                <th>Total Price</th>
+            </tr>
+            </thead>
+            <tbody>
+            @if (Model.Orders != null && Model.Orders.Any())
+            {
+                @foreach (var order in Model.Orders.OrderByDescending(o => o.OrderDate))
+                {
+                    <tr>
+                        <td>@order.OrderId</td>
+                        <td>@order.OrderDate</td>
+                        <td>@order.SentDate</td>
+                        <td>$@order.TotalPrice</td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    </div>
     
     <h5>Access Logs</h5>
     <div class="table-responsive-scrollable">
