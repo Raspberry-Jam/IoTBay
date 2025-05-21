@@ -1,8 +1,47 @@
-@model TModel
-
+@model IEnumerable<IoTBay.Models.Entities.Order>
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "Order Management";
     Layout = "_Layout";
 }
-
-<h2>title</h2>
+<h2>Order Management</h2>
+<form method="get" asp-action="Index">
+    <input type="text" name="searchOrderNumber" placeholder="Order Number" />
+    <input type="text" name="searchDate" placeholder="Order Date (yyyy-mm-dd)" />
+    <button type="submit">Search</button>
+    <a asp-action="Create" class="btn btn-primary">Create New Order</a>
+</form>
+<table class="table" id="order-list">
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>User</th>
+            <th>Products</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>@order.OrderId</td>
+                <td>@order.User.Contact?.GivenName</td>
+                <td>
+                    @foreach (var op in order.OrderProducts)
+                    {
+                        <div>@op.Product?.Name (x@op.Amount)</div>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@order.OrderId">View</a> |
+                    <a asp-action="Edit" asp-route-id="@order.OrderId">Edit</a> |
+                    <form asp-action="Submit" asp-route-id="@order.OrderId" method="post" style="display:inline">
+                        <button type="submit" class="btn btn-link">Submit</button>
+                    </form> |
+                    <form asp-action="Cancel" asp-route-id="@order.OrderId" method="post" style="display:inline">
+                        <button type="submit" class="btn btn-link">Cancel</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table> 

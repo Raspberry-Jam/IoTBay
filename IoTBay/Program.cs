@@ -34,10 +34,38 @@ public class Program
 
         var app = builder.Build();
 
-        using (var scope = app.Services.CreateScope())
+       using (var scope = app.Services.CreateScope())
         {
-            var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            if (!ctx.Addresses.Any())
+            var ctx = scope.ServiceProvider.GetRequiredService<IAppDbContext>();
+            var addressQuery = from a in ctx.Addresses
+                where a.AddressId >= 1
+                select a;
+            var productQuery = from p in ctx.Products
+                where p.ProductId >= 1
+                select p;
+            var userQuery = from u in ctx.Users
+                where u.UserId >= 1
+                select u;
+
+            if (!userQuery.Any())
+            {
+                var contact = new Contact
+                {
+                    Email = "test@test.com",
+                    GivenName = "Tester",
+                    Surname = "Debugger"
+                };
+                ctx.Contacts.Add(contact);
+                var passwordHash = Utils.HashUtils.HashPassword("password", out var salt);
+                ctx.Users.Add(new User
+                {
+                    PasswordHash = passwordHash,
+                    PasswordSalt = salt,
+                    Contact = contact
+                });
+            }
+            
+            if (!addressQuery.Any())
             {
                 ctx.Addresses.Add(new Address
                 {
@@ -54,16 +82,27 @@ public class Program
                     State = State.NSW,
                     Postcode = "8823"
                 });
+            } 
+            else
+            {
+                Console.WriteLine("Addresses already exist");
+            }
+
+            if (!productQuery.Any()) {
                 ctx.Products.Add(new Product
                 {
-                    ProductId = 000001,
                     Name = "Keyboard",
+                    Type = "Keyboard",
                     Price = 32.05,
                     ShortDescription = "Standard QWERTY layout USB Keyboard",
                     FullDescription = "This Keyboard is a part of IotBay's Standard Office Equipment Range and has full USB capability, is compatible with Windows, MacOS and Linux"
                 });
-                ctx.SaveChanges();
             }
+            else
+            {
+                Console.WriteLine("Products already exist");
+            }
+            ctx.SaveChanges();
         }
 
         // Configure the HTTP request pipeline.
