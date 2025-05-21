@@ -68,24 +68,64 @@ public class Program
             var userQuery = from u in ctx.Users
                 where u.UserId >= 1
                 select u;
+            var orderQuery = from o in ctx.Orders
+                where o.OrderId >= 1
+                select o;
 
-            if (!userQuery.Any())
+            if (!productQuery.Any())
             {
-                var contact = new Contact
+                var product = new Product
                 {
-                    Email = "test@test.com",
-                    GivenName = "Tester",
-                    Surname = "Debugger"
+                    Name = "Keyboard",
+                    Type = "Keyboard",
+                    Price = 32.05,
+                    ShortDescription = "Standard QWERTY layout USB Keyboard",
+                    FullDescription =
+                        "This Keyboard is a part of IotBay's Standard Office Equipment Range and has full USB capability, is compatible with Windows, MacOS and Linux"
                 };
-                ctx.Contacts.Add(contact);
-                var passwordHash = Utils.HashUtils.HashPassword("password", out var salt);
-                ctx.Users.Add(new User
+                ctx.Products.Add(product);
+                if (!userQuery.Any())
                 {
-                    PasswordHash = passwordHash,
-                    PasswordSalt = salt,
-                    Contact = contact,
-                    Role = Role.Customer
-                });
+                    var contact = new Contact
+                    {
+                        Email = "test@test.com",
+                        GivenName = "Tester",
+                        Surname = "Debugger"
+                    };
+                    ctx.Contacts.Add(contact);
+                    var passwordHash = Utils.HashUtils.HashPassword("password", out var salt);
+                    var user = new User
+                    {
+                        PasswordHash = passwordHash,
+                        PasswordSalt = salt,
+                        Contact = contact,
+                        Role = Role.Customer
+                    };
+                    ctx.Users.Add(user);
+                    if (!orderQuery.Any())
+                    {
+                        var order = new Order
+                        {
+                            User = user,
+                            ShipmentMethodId = -1,
+                            PaymentMethodId = -1,
+                            OrderDate = DateOnly.FromDateTime(DateTime.Now)
+                        };
+                        order.OrderProducts = new List<OrderProduct>
+                        {
+                            new() {
+                                Order = order,
+                                Product = product,
+                                Quantity = 13
+                            }
+                        };
+                        ctx.Orders.Add(order);
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Products already exist");
             }
             
             if (!addressQuery.Any())
@@ -109,21 +149,6 @@ public class Program
             else
             {
                 Console.WriteLine("Addresses already exist");
-            }
-
-            if (!productQuery.Any()) {
-                ctx.Products.Add(new Product
-                {
-                    Name = "Keyboard",
-                    Type = "Keyboard",
-                    Price = 32.05,
-                    ShortDescription = "Standard QWERTY layout USB Keyboard",
-                    FullDescription = "This Keyboard is a part of IotBay's Standard Office Equipment Range and has full USB capability, is compatible with Windows, MacOS and Linux"
-                });
-            }
-            else
-            {
-                Console.WriteLine("Products already exist");
             }
             ctx.SaveChanges();
         }
