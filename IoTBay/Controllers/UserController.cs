@@ -273,6 +273,11 @@ public class UserController(ILogger<UserController> logger, UserRepository userR
                 user.PasswordHash = passwordHash;
                 user.PasswordSalt = salt;
             }
+            else
+            {
+                ModelState.AddModelError("incorrectOldPassword", "Incorrect current password. Please try again.");
+                return View(model);
+            }
         }
 
         if (model.Email != null) // Change their email
