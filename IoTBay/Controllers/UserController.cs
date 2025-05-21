@@ -137,4 +137,12 @@ public class UserController(ILogger<UserController> logger, UserRepository userR
 
         return View("Welcome", user);
     }
+    
+    // Allow both HttpGet and HttpPost
+    [AuthenticationFilter]
+    public IActionResult Logout()
+    {
+        HttpContext.Session.Clear();
+        return RedirectToAction("Index", "Home");
+    }
 }
