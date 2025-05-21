@@ -27,11 +27,4 @@ public class RegisterViewModel : IValidatableObject
                         Value = s.ToString()
                     }));
     public Contact Contact { get; set; }
-    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-    {
-        if (Contact.PhoneNumber != null && Contact.PhoneNumber.Length != 10)
-        {
-            yield return new ValidationResult("Phone number must be 10 digits", ["Contact.Email"]);
-        }
-    }
 }
