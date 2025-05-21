@@ -3,12 +3,12 @@
 
 @if (Model != null && Model.Role != Role.Anonymous)
 {
-    <span class="navbar-text"> Welcome, @Model.GivenName</span>
-    <a class="nav-link" asp-controller="Home" asp-action="Index">Profile Settings</a>
-    <a class="nav-link" asp-controller="Home" asp-action="Index">Logout</a>
+    <span class="navbar-text" style="color: grey">Welcome, @Model.GivenName | </span>
+    <a class="nav-link" asp-controller="Home" asp-action="Index">Settings</a>
+    <a class="nav-link" asp-controller="User" asp-action="Logout">Logout</a>
 }
 else
 {
-    <span class="navbar-text">Welcome honoured guest</span>
+    <span class="navbar-text" style="color: grey">Welcome honoured guest | </span>
     <a class="nav-link" asp-controller="User" asp-action="Index">Login</a>
 }
