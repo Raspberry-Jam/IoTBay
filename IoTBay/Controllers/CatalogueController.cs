@@ -3,6 +3,7 @@ using IoTBay.Models.Entities;
 using IoTBay.Models.Views;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace IoTBay.Controllers;
 
@@ -17,18 +18,63 @@ public class CatalogueController : Controller
         _db = db;
     }
     
-    public IActionResult Index()
+    public IActionResult Index(string? searchQuery, string? selectedCategory, decimal? minPrice, decimal? maxPrice)
     {
-
-        var products =
-            from product in _db.Products
+        // Get all products from the database
+        var allProducts = from product in _db.Products
             where product.ProductId > 0
             orderby product.ProductId
             select product;
-            
-        return View(products.ToList());
+
+        // Get distinct categories for the dropdown
+        var categories = allProducts.Select(p => p.Type).Distinct().ToList();
+        var categorySelectList = categories.Select(c => new SelectListItem
+        {
+            Value = c,
+            Text = c
+        }).ToList();
+
+        // Apply filters
+        var query = allProducts.Where(p =>
+            (string.IsNullOrEmpty(searchQuery) || p.Name.ToLower().Contains(searchQuery.ToLower())) &&
+            (string.IsNullOrEmpty(selectedCategory) || p.Type == selectedCategory) &&
+            (!minPrice.HasValue || p.Price >= (double?)minPrice) &&
+            (!maxPrice.HasValue || p.Price <= (double?)maxPrice)
+        );
+        _logger.LogInformation(query.ToQueryString());
+        var filtered = query.ToList();
         
+        // Map the filtered products to ProductEditModel
+        var productEditModels = filtered.Select(p => new ProductEditModel
+        {
+            ProductId = p.ProductId,
+            Name = p.Name,
+            ShortDescription = p.ShortDescription!,
+            Price = p.Price,
+            Stock = p.Stock,
+            Type = p.Type
+        }).ToList();
+
+        // Create the view model and assign the mapped products
+        var viewModel = new CatalogueFilterViewModel
+        {
+            SearchQuery = searchQuery,
+            SelectedCategory = selectedCategory,
+            MinPrice = minPrice,
+            MaxPrice = maxPrice,
+            ProductCategories = categorySelectList,
+            Products = productEditModels, // Now you're passing a list of ProductEditModel
+        };
+
+        // Return the view with the view model
+        return View(viewModel);
     }
+
+
+    
+    
+    
+    
     
     public IActionResult ProductPage(int id)
     {
