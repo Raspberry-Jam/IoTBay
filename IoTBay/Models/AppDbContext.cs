@@ -302,10 +302,12 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.EventTime)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("event_time");
-            entity.Property(e => e.EventType)
-                .HasMaxLength(8)
-                .HasColumnName("event_type");
             entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.EventType)
+                .HasConversion(
+                    t => t.ToString().ToLower(),
+                    t => Enum.Parse<AccessEventType>(t, true))
+                .HasColumnName("event_type");
 
             entity.HasOne(d => d.User).WithMany(p => p.UserAccessEvents)
                 .HasForeignKey(d => d.UserId)
