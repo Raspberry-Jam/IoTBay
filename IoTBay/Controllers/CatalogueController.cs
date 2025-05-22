@@ -6,7 +6,6 @@ using IoTBay.Models.Views;
 using IoTBay.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 
 namespace IoTBay.Controllers;
 
