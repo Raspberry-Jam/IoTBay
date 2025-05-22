@@ -30,6 +30,10 @@
       DOTNET_DEBUG: 1
       DOTNET_WATCH: 1
       CONNECTION_STRING: Host=db;Port=5432;Database=iotbaydb;Username=iotbay;Password=password
+      ASPNETCORE_URLS: http://+:8080
+      HTTP_PORTS: ""
+      HTTPS_PORTS: ""
+
     volumes:
       - .:/app
     ports:
