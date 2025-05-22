@@ -48,7 +48,10 @@
     <input asp-for="PhoneNumber" type="text" value="@Model.PhoneNumber" placeholder="Phone Number"/><br/>
 
     <h5>Payment Details</h5>
-    <p>TODO: Add payment details editing here</p>
+    <a asp-controller="PaymentMethod" asp-action="Index" class="btn btn-primary mt-2">
+        Manage Payment Methods
+    </a>
+
 
     <h5>Shipping Details</h5>
     <p>TODO: Add shipping details editing here</p>

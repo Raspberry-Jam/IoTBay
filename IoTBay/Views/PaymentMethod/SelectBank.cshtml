@@ -1,0 +1,119 @@
+@model List<IoTBay.Controllers.BankInfo>
+
+@{
+    ViewData["Title"] = "Select Your Bank";
+    var mode = Context.Request.Query["mode"].ToString();
+    var returnUrl = Context.Request.Query["returnUrl"].ToString();
+}
+
+<h2 class="mb-3">@ViewData["Title"]</h2>
+
+<!-- 搜索输入框 / Search bar -->
+<input id="cardInput" class="form-control mb-3" placeholder="Enter card number or bank name..." maxlength="32" />
+
+<!-- 银行卡片展示区域 / Bank card button list -->
+<div class="row">
+    @foreach (var bank in Model)
+    {
+        var keywords = $"{bank.Name.ToLower()} {bank.Code.ToLower()} {string.Join(" ", bank.Bins ?? new List<string>())}";
+
+        <div class="col-md-6 mb-3 bank-card" data-keywords="@keywords" data-code="@bank.Code">
+            <button class="btn btn-outline-primary w-100 d-flex align-items-center shadow-sm p-3 rounded bank-button" disabled>
+                <img src="@bank.IconPath" alt="@bank.Name" width="32" height="32" class="me-3" />
+                <span>@bank.Name</span>
+            </button>
+        </div>
+    }
+</div>
+
+<!-- JavaScript 控制逻辑 / Bank selection logic -->
+<script>
+    const input = document.getElementById("cardInput");
+    const cards = document.querySelectorAll(".bank-card");
+
+    function initializeButtonsForEmptyInput() {
+        cards.forEach(card => {
+            const code = card.getAttribute("data-code");
+            const button = card.querySelector(".bank-button");
+
+            card.style.display = "block";
+            button.disabled = false;
+
+            button.onclick = () => {
+                const url = `/PaymentMethod/AddCardDetails?bank=${code}&mode=${encodeURIComponent('@mode')}&returnUrl=${encodeURIComponent('@returnUrl')}`;
+                window.location.href = url;
+            };
+        });
+    }
+
+    initializeButtonsForEmptyInput();
+
+    function formatCardNumber(value) {
+        return value.replace(/\D/g, "")
+            .substring(0, 16)
+            .replace(/(.{4})/g, "$1-")
+            .replace(/-$/, "");
+    }
+
+    input.addEventListener("input", function () {
+        let value = input.value.trim();
+        let raw = value.replace(/-/g, "").substring(0, 19);
+        let formatted = value;
+
+        const isNumeric = /^\d+$/.test(raw);
+        const prefix = raw.slice(0, 4);
+        const isValidLength = raw.length === 16;
+        let matchFound = false;
+
+        if (isNumeric) {
+            raw = raw.substring(0, 16);
+            formatted = formatCardNumber(raw);
+            input.value = formatted;
+        }
+
+        if (raw.length === 0) {
+            initializeButtonsForEmptyInput();
+            return;
+        }
+
+        cards.forEach(card => {
+            const keywords = card.getAttribute("data-keywords");
+            const code = card.getAttribute("data-code");
+            const button = card.querySelector(".bank-button");
+            let match = false;
+
+            if (isNumeric) {
+                match = keywords.split(" ").some(kw => /^\d+$/.test(kw) && prefix === kw);
+            } else {
+                match = keywords.includes(value.toLowerCase());
+            }
+
+            if (match) {
+                card.style.display = "block";
+
+                if (isNumeric && isValidLength) {
+                    button.disabled = false;
+                    matchFound = true;
+                    button.onclick = () => {
+                        window.location.href = `/PaymentMethod/AddCardDetails?bank=${code}&card=${raw}&mode=${encodeURIComponent('@mode')}&returnUrl=${encodeURIComponent('@returnUrl')}`;
+                    };
+                }
+                else if (!isNumeric) {
+                    button.disabled = false;
+                    matchFound = true;
+                    button.onclick = () => {
+                        window.location.href = `/PaymentMethod/AddCardDetails?bank=${code}&mode=${encodeURIComponent('@mode')}&returnUrl=${encodeURIComponent('@returnUrl')}`;
+                    };
+                }
+                else {
+                    button.disabled = true;
+                    button.onclick = null;
+                }
+            } else {
+                card.style.display = "none";
+                button.disabled = true;
+                button.onclick = null;
+            }
+        });
+    });
+</script>
