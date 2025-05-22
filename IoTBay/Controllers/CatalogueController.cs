@@ -268,9 +268,18 @@ public class CatalogueController(ILogger<CatalogueController> logger, AppDbConte
             return NotFound();
         }
 
+        // Delete associated image(s)
+        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Photos");
+        var existingFiles = Directory.GetFiles(uploadsFolder, $"{product.ProductId}.*");
+        foreach (var file in existingFiles)
+        {
+            System.IO.File.Delete(file);
+        }
+
         db.Products.Remove(product);
         db.SaveChanges();
 
         return RedirectToAction("Index", "Catalogue");
     }
+
 }
