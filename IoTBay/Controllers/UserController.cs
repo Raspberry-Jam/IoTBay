@@ -312,6 +312,16 @@ public class UserController(ILogger<UserController> logger, UserRepository userR
             user.Contact!.Email = model.Email;
         }
 
+        // Check if their new phone number is digits only and exactly 10 digits long
+        if (!string.IsNullOrEmpty(model.PhoneNumber))
+        {
+            if (!Regex.IsMatch(model.PhoneNumber, @"^\d{10}$"))
+            {
+                ModelState.AddModelError("invalidPhoneNumber", "Your phone number must contain only numeric characters, and must be 10 digits long.");
+                return View(model);
+            }
+        }
+        
         // Update their phone number (allow null values, if they want to remove their phone number from their account).
         user.Contact!.PhoneNumber = model.PhoneNumber;
 
