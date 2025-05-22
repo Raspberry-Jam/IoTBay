@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using IoTBay.Models.DTOs;
 using IoTBay.Models.Entities;
 using IoTBay.Models.Views;
@@ -256,6 +257,14 @@ public class UserController(ILogger<UserController> logger, UserRepository userR
     [AuthenticationFilter]
     public async Task<IActionResult> Settings(UserSettingsViewModel model)
     {
+        // Get the session data from the request
+        var sessionDto = SessionUtils.GetObjectFromJson<UserSessionDto>(HttpContext.Session, "currentUser");
+        if (sessionDto == null) // If they managed to execute this action without session data, something went wrong
+        {
+            logger.LogError("Settings page authenticated with an invalid session");
+            return RedirectToAction("Error", "Home");
+        }
+        
         // Check error state of the model, and redirect to index if the model is malformed
         if (!ModelState.IsValid)
         {
@@ -337,6 +346,19 @@ public class UserController(ILogger<UserController> logger, UserRepository userR
         // Track and update the user entity in the current repository context
         userRepository.Update(user);
         await userRepository.SaveChangesAsync();
+        
+        sessionDto.GivenName = user.Contact!.GivenName; // Update the GivenName for the user session
+        
+        SessionUtils.SetObjectAsJson(HttpContext.Session, "currentUser", sessionDto);
+        
+        var accessEvents = user.UserAccessEvents
+            .Select(e => new UserAccessEventViewModel
+            {
+                EventTime = e.EventTime,
+                EventType = e.EventType
+            });
+
+        model.AccessEvents = accessEvents; // Reattach the access events list to the model before sending it back
 
         ViewData["SuccessMessage"] = "Details updated successfully!";
         return View(model);
