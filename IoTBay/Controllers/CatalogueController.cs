@@ -1,16 +1,16 @@
 using System.ComponentModel.DataAnnotations;
 using IoTBay.Models;
+using IoTBay.Models.DTOs;
 using IoTBay.Models.Entities;
 using IoTBay.Models.Views;
+using IoTBay.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 
 namespace IoTBay.Controllers;
 
 public class CatalogueController(ILogger<CatalogueController> logger, AppDbContext db) : Controller
 {
-    [HttpGet]
     public IActionResult Index(string? searchQuery, string? selectedCategory, decimal? minPrice, decimal? maxPrice)
 {
     // Get all products from the database (no filtering yet)
@@ -80,15 +80,21 @@ public class CatalogueController(ILogger<CatalogueController> logger, AppDbConte
     return View(viewModel);
 }
 
-
     public IActionResult ProductPage(int id)
     {
+        var sessionUser = SessionUtils.GetObjectFromJson<UserSessionDto>(HttpContext.Session, "currentUser");
         var query =
             from currentProduct in db.Products
             where currentProduct.ProductId == id
             select currentProduct;
 
-        return View(query.SingleOrDefault());
+        var model = new ProductPageViewModel
+        {
+            Product = query.SingleOrDefault()!,
+            UserRole = sessionUser?.Role ?? Role.Anonymous
+        };
+
+        return View(model);
     }
 
     // GET: /Catalogue/ProductAdd
@@ -197,7 +203,6 @@ public class CatalogueController(ILogger<CatalogueController> logger, AppDbConte
         return RedirectToAction("Index");
     }
 
-
     [HttpGet]
     [AuthenticationFilter(Role.Staff)]
     public IActionResult ProductEditDelete(int id)
@@ -252,6 +257,7 @@ public class CatalogueController(ILogger<CatalogueController> logger, AppDbConte
     }
 
     [HttpPost]
+    [AuthenticationFilter(Role.Staff)]
     [ValidateAntiForgeryToken]
     public IActionResult ProductDelete(int id)
     {
