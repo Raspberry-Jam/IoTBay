@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using IoTBay.Models.DTOs;
 using IoTBay.Models.Entities;
 using IoTBay.Models.Views;
@@ -256,6 +257,14 @@ public class UserController(ILogger<UserController> logger, UserRepository userR
     [AuthenticationFilter]
     public async Task<IActionResult> Settings(UserSettingsViewModel model)
     {
+        // Get the session data from the request
+        var sessionDto = SessionUtils.GetObjectFromJson<UserSessionDto>(HttpContext.Session, "currentUser");
+        if (sessionDto == null) // If they managed to execute this action without session data, something went wrong
+        {
+            logger.LogError("Settings page authenticated with an invalid session");
+            return RedirectToAction("Error", "Home");
+        }
+        
         // Check error state of the model, and redirect to index if the model is malformed
         if (!ModelState.IsValid)
         {
@@ -312,6 +321,16 @@ public class UserController(ILogger<UserController> logger, UserRepository userR
             user.Contact!.Email = model.Email;
         }
 
+        // Check if their new phone number is digits only and exactly 10 digits long
+        if (!string.IsNullOrEmpty(model.PhoneNumber))
+        {
+            if (!Regex.IsMatch(model.PhoneNumber, @"^\d{10}$"))
+            {
+                ModelState.AddModelError("invalidPhoneNumber", "Your phone number must contain only numeric characters, and must be 10 digits long.");
+                return View(model);
+            }
+        }
+        
         // Update their phone number (allow null values, if they want to remove their phone number from their account).
         user.Contact!.PhoneNumber = model.PhoneNumber;
 
@@ -327,6 +346,19 @@ public class UserController(ILogger<UserController> logger, UserRepository userR
         // Track and update the user entity in the current repository context
         userRepository.Update(user);
         await userRepository.SaveChangesAsync();
+        
+        sessionDto.GivenName = user.Contact!.GivenName; // Update the GivenName for the user session
+        
+        SessionUtils.SetObjectAsJson(HttpContext.Session, "currentUser", sessionDto);
+        
+        var accessEvents = user.UserAccessEvents
+            .Select(e => new UserAccessEventViewModel
+            {
+                EventTime = e.EventTime,
+                EventType = e.EventType
+            });
+
+        model.AccessEvents = accessEvents; // Reattach the access events list to the model before sending it back
 
         ViewData["SuccessMessage"] = "Details updated successfully!";
         return View(model);

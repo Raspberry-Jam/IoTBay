@@ -1,0 +1,23 @@
+@model IoTBay.Models.Views.ProductPageViewModel
+
+@{
+    ViewData["Title"] = "Product Page - " + Model.Product.Name;
+}
+
+<div class="container mt-4">
+    <h2>@Model.Product.Name</h2>
+
+    <img src="~/Photos/@(Model.Product.ProductId + ".jpg")" alt="@Model.Product.Name" class="img-fluid mb-3" />
+
+    <p><strong>Description:</strong> @Model.Product.ShortDescription</p>
+    <p><strong>Type:</strong> @Model.Product.Type</p>
+    <p><strong>Price:</strong> $@Model.Product.Price</p>
+    <p><strong>Stock:</strong> @Model.Product.Stock</p>
+    <p><strong>Description:</strong> @Model.Product.FullDescription</p>
+    
+    
+</div>
+
+<form asp-controller="Catalogue" asp-action="ProductEditDelete" asp-route-id="@(Model.Product.ProductId)" method="get">
+    <button type="submit" class="btn btn-primary">Edit/Delete</button>
+</form>

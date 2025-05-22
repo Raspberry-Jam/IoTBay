@@ -1,0 +1,39 @@
+@model IoTBay.Models.Views.ShipmentMethodCreateViewModel
+
+@{
+    ViewData["Title"] = "Create Shipment";
+}
+
+<div class="container mt-4">
+    <h1>Create Shipment</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="Create" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="UserId" /> <!-- Preserve UserId on form submission -->
+
+                <div class="form-group mb-3">
+                    <label asp-for="Method" class="control-label"></label>
+                    <input asp-for="Method" class="form-control"/>
+                    <span asp-validation-for="Method" class="text-danger"></span>
+                </div>
+                
+                <input asp-for="Address.StreetLine1" type="text" placeholder="Street Line 1"/> <br/>
+                <input asp-for="Address.StreetLine2" type="text" placeholder="Street Line 2"/> <br/>
+                <input asp-for="Address.Suburb" type="text" placeholder="Suburb" /> <br/>
+                @Html.DropDownListFor(m => m.Address.State, Model.States, new { @class = "form-control" })
+                <input asp-for="Address.Postcode" type="text" placeholder="Postcode"/> <br/>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Create</button>
+                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

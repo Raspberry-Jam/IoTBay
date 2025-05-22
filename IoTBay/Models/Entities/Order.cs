@@ -24,4 +24,6 @@ public partial class Order
     public virtual ShipmentMethod ShipmentMethod { get; set; } = null!;
 
     public virtual User User { get; set; } = null!;
+    
+    public virtual Shipment? Shipment { get; set; }
 }

@@ -27,4 +27,9 @@ public partial class Address
     public virtual ICollection<ShipmentMethod> ShipmentMethods { get; set; } = new List<ShipmentMethod>();
 
     public virtual ICollection<Supplier> Suppliers { get; set; } = new List<Supplier>();
+
+    public override string ToString()
+    {
+        return $"{StreetLine1} {StreetLine2}, {Suburb}, {State.ToString()}, {Postcode}";
+    }
 }

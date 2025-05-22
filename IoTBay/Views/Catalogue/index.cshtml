@@ -1,28 +1,78 @@
+
 @{
-    ViewData["Title"] = "Storefront Page";
+    ViewData["Title"] = "Storefront Index Page";
 }
 
-@model List<IoTBay.Models.Entities.Product>
+@model IoTBay.Models.Views.CatalogueFilterViewModel
 
 <h2 class="text-center mb-4">Product Catalogue</h2>
+<a asp-controller="Catalogue" asp-action="ProductAdd">Add New Product!</a>
 
-@*<div class="container">
+@* Filter Logic *@
+<form asp-controller="Catalogue" asp-action="Index" method="get" class="mb-4">
     <div class="row">
-        @foreach (var product in Model)
+        <div class="col-md-4">
+            <input type="text" name="SearchQuery" class="form-control" placeholder="Search by name..." value="@Model.SearchQuery" />
+        </div>
+        <div class="col-md-2">
+            <select name="SelectedCategory" class="form-control">
+                <option value="">All Categories</option>
+                @foreach (var category in Model.ProductCategories)
+                {
+                    <option value="@category.Value" selected="@(category.Value == Model.SelectedCategory)">
+                        @category.Text
+                    </option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <input type="number" step="0.01" name="MinPrice" class="form-control" placeholder="Min Price" value="@Model.MinPrice" />
+        </div>
+        <div class="col-md-2">
+            <input type="number" step="0.01" name="MaxPrice" class="form-control" placeholder="Max Price" value="@Model.MaxPrice" />
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+    </div>
+</form>
+
+@* Rows and Columns for Products to give it a grid *@
+<div class="container">
+    <div class="row">
+        @if (!Model.Products.Any())
         {
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    @if (!string.IsNullOrEmpty(product.ThumbnailUri))
-                    {
-                        <img src="@product.ThumbnailUri" class="card-img-top" alt="@product.Name" />
-                    }
-                    <div class="card-body">
-                        <h5 class="card-title">@product.Name</h5>
-                        <p class="card-text">@product.ShortDescription</p>
-                        <p class="card-text"><strong>Price:</strong> $@product.Price</p>
+            <div class="col-12">
+                <p class="text-muted text-center">No products match your search criteria.</p>
+            </div>
+        }
+
+        @foreach (var product in Model.Products)
+        {
+            <div class="col-md-4 mb-5"> <!-- Increased bottom margin for more white space -->
+                <a asp-controller="Catalogue" asp-action="ProductPage" asp-route-id="@product.ProductId" class="text-decoration-none text-dark">
+                    <div class="card mb-3"> <!-- Optional spacing below card -->
+                        <img src="~/Photos/@(product.ProductId + ".jpg")"
+                             alt="@product.Name"
+                             class="img-fluid mb-3 card-img-top"
+                             style="height: 200px; object-fit: cover; width: 100%;" 
+                             onerror="this.onerror=null; this.src='/images/placeholder.jpg';" />
+
+                        <div class="card-body">
+                            <h5 class="card-title">@product.Name</h5>
+                            <p class="card-text">@product.ShortDescription</p>
+                            <p class="card-text"><strong>Price:</strong> $@product.Price</p>
+                            <p class="card-text"><strong>Stock on Hand:</strong>@product.Stock</p>
+                            <p class="card-text"><strong>Type:</strong>@product.Type</p>
+                        </div>
                     </div>
-                </div>
+                </a>
+                <form method="post" asp-controller="Cart" asp-action="Index" class="mt-2">
+                    <input type="hidden" name="ProductId" value="@product.ProductId" />
+                    <input type="number" step="1" min="1" name="Quantity" class="form-control mb-2" placeholder="Quantity" />
+                    <button type="submit" class="btn btn-primary w-100">Add to Cart</button>
+                </form>
             </div>
         }
     </div>
-</div>*@
+</div>

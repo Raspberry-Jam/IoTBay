@@ -1,0 +1,81 @@
+@model IoTBay.Models.Views.ShipmentMethodIndexViewModel
+
+@{
+    ViewData["Title"] = "Shipment Management";
+}
+
+<div class="container mt-4">
+    <h1>Shipment Management</h1>
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col">
+                            <h5>Search Shipments</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Index" method="get" class="row g-3">
+                        <div class="col-md-5">
+                            <div class="input-group">
+                                <span class="input-group-text">Shipping Method</span>
+                                <input asp-for="MethodSearch" />
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="input-group">
+                                <span class="input-group-text">Delivery Address</span>
+                                <input asp-for="AddressSearch" />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-secondary w-100">Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            @if (!Model.ShipmentMethods.Any())
+            {
+                <div class="alert alert-info">
+                    No shipment methods found.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                        <tr>
+                            <th>Shipping Method</th>
+                            <th>Delivery Address</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var item in Model.ShipmentMethods)
+                        {
+                            <tr>
+                                <td>@item.Method</td>
+                                <td>@item.Address.ToString()</td>
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@item.ShipmentMethodId">Edit</a> <br/>
+                                    <a asp-action="Delete" asp-route-id="@item.ShipmentMethodId">Delete</a>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+    <a asp-action="Create">Create a new Shipment Method</a>
+</div> 

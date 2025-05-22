@@ -35,7 +35,9 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<UserAccessEvent> UserAccessEvents { get; set; }
 
     public virtual DbSet<UserCartProduct> UserCartProducts { get; set; }
-
+    
+    public virtual DbSet<Shipment> Shipments { get; set; }
+    
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
@@ -47,6 +49,17 @@ public partial class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Shipment>(entity =>
+        {
+            entity.HasKey(e => e.ShipmentId);
+            
+            entity.HasOne(e => e.Order)
+                .WithOne(e => e.Shipment)
+                .HasForeignKey<Shipment>(e => e.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
         modelBuilder.Entity<Address>(entity =>
         {
             entity.HasKey(e => e.AddressId).HasName("addresses_pkey");
@@ -308,6 +321,7 @@ public partial class AppDbContext : DbContext
                     t => t.ToString().ToLower(),
                     t => Enum.Parse<AccessEventType>(t, true))
                 .HasColumnName("event_type");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
 
             entity.HasOne(d => d.User).WithMany(p => p.UserAccessEvents)
                 .HasForeignKey(d => d.UserId)
