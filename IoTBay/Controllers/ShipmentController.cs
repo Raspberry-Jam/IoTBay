@@ -1,137 +1,161 @@
 using IoTBay.Models;
 using IoTBay.Models.DTOs;
 using IoTBay.Models.Entities;
+using IoTBay.Models.Views;
+using IoTBay.Repositories;
 using IoTBay.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace IoTBay.Controllers;
 
-public class ShipmentController(AppDbContext db) : Controller
+public class ShipmentController(
+    AppDbContext db,
+    ShipmentMethodRepository shipmentMethodRepository,
+    ILogger<ShipmentController> logger) : Controller
 {
-    private readonly AppDbContext _db = db;
-[AuthenticationFilter]
     // List all shipments for the current user
-    public async Task<IActionResult> Index(string? searchTerm = null, DateTime? searchDate = null)
+    [AuthenticationFilter]
+    public IActionResult Index(ShipmentMethodIndexViewModel? model)
     {
         var sessionDto = SessionUtils.GetObjectFromJson<UserSessionDto>(HttpContext.Session, "currentUser");
-
-        var query = _db.Shipments
-            .Include(s => s.Order)
-            .Where(s => s.Order.UserId == sessionDto.UserId);
-
-        // Apply search filters
-        if (!string.IsNullOrEmpty(searchTerm))
+        if (sessionDto == null) // If they managed to execute this action without session data, something went wrong
         {
-            query = query.Where(s => s.ShippingMethod.Contains(searchTerm));
+            logger.LogError("Settings page authenticated with an invalid session");
+            return RedirectToAction("Error", "Home");
         }
 
-        if (searchDate.HasValue)
-        {
-            var date = DateOnly.FromDateTime(searchDate.Value);
-            query = query.Where(s => s.ShippingDate == date);
-        }
+        var shipments = db.ShipmentMethods
+            .Include(s => s.Address)
+            .AsEnumerable()
+            .Where(sm => sm.UserId == sessionDto.UserId)
+            .Where(sm =>
+                sm.Method.Contains(model?.MethodSearch ??
+                                   "")) // Filter by contains method if the MethodSearch string isn't null
+            .Where(sm =>
+                sm.Method.Contains(model?.AddressSearch ??
+                                   "")); // Filter by contains address if the AddressSearch string isn't null
 
-        var shipments = await query.ToListAsync();
-        return View(shipments);
+        var viewModel = new ShipmentMethodIndexViewModel
+        {
+            ShipmentMethods = shipments
+        };
+        return View(viewModel);
     }
 
     // Show form to create new shipment
-    public async Task<IActionResult> Create(int orderId)
+    [AuthenticationFilter]
+    [HttpGet]
+    public IActionResult Create()
     {
-        int? userId = HttpContext.Session.GetInt32("UserId");
-        if (userId == null)
+        var sessionDto = SessionUtils.GetObjectFromJson<UserSessionDto>(HttpContext.Session, "currentUser");
+        if (sessionDto == null) // If they managed to execute this action without session data, something went wrong
         {
-            return RedirectToAction("Index", "Register");
+            logger.LogError("Settings page authenticated with an invalid session");
+            return RedirectToAction("Error", "Home");
         }
 
-        var order = await _db.Orders.FindAsync(orderId);
-        if (order == null || order.UserId != userId)
+        var model = new ShipmentMethodCreateViewModel
         {
-            return NotFound();
-        }
-
-        var model = new Shipment { OrderId = orderId };
+            UserId = sessionDto.UserId
+        };
         return View(model);
     }
 
     // Process new shipment creation
+    [AuthenticationFilter]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Shipment shipment)
+    public async Task<IActionResult> Create(ShipmentMethodCreateViewModel model)
     {
-        int? userId = HttpContext.Session.GetInt32("UserId");
-        if (userId == null)
+        var sessionDto = SessionUtils.GetObjectFromJson<UserSessionDto>(HttpContext.Session, "currentUser");
+        if (sessionDto == null) // If they managed to execute this action without session data, something went wrong
         {
-            return RedirectToAction("Index", "Register");
-        }
-
-        var order = await _db.Orders.FindAsync(shipment.OrderId);
-        if (order == null || order.UserId != userId)
-        {
-            return NotFound();
+            logger.LogError("Settings page authenticated with an invalid session");
+            return RedirectToAction("Error", "Home");
         }
 
         if (ModelState.IsValid)
         {
-            shipment.Status = "pending";
-            _db.Shipments.Add(shipment);
-            await _db.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            // TODO: Address Validation
+            var shipment = new ShipmentMethod
+            {
+                UserId = sessionDto.UserId,
+                Address = model.Address,
+                Method = model.Method
+            };
+
+            db.ShipmentMethods.Add(shipment);
+            await db.SaveChangesAsync();
+            return RedirectToAction("Index", "Home");
         }
 
-        return View(shipment);
+        return View(model);
     }
 
     // Show shipment edit form
+    [AuthenticationFilter]
+    [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
-        int? userId = HttpContext.Session.GetInt32("UserId");
-        if (userId == null)
+        var sessionDto = SessionUtils.GetObjectFromJson<UserSessionDto>(HttpContext.Session, "currentUser");
+        if (sessionDto == null) // If they managed to execute this action without session data, something went wrong
         {
-            return RedirectToAction("Index", "Register");
+            logger.LogError("Settings page authenticated with an invalid session");
+            return RedirectToAction("Error", "Home");
         }
 
-        var shipment = await _db.Shipments
-            .Include(s => s.Order)
-            .FirstOrDefaultAsync(s => s.ShipmentId == id);
+        var shipment = await shipmentMethodRepository.GetById(id);
 
-        if (shipment == null || shipment.Order.UserId != userId || shipment.Status != "pending")
+        if (shipment.UserId != sessionDto.UserId) // User is somehow accessing a ShipmentMethod they do not own
         {
-            return NotFound();
+            return RedirectToAction("AccessDenied", "Home");
         }
 
-        return View(shipment);
+        var model = new ShipmentMethodEditViewModel
+        {
+            ShipmentMethod = shipment
+        };
+
+        return View(model);
     }
 
     // Process shipment update
+    [AuthenticationFilter]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, Shipment shipment)
+    public async Task<IActionResult> Edit(ShipmentMethodEditViewModel model)
     {
-        int? userId = HttpContext.Session.GetInt32("UserId");
-        if (userId == null)
+        var sessionDto = SessionUtils.GetObjectFromJson<UserSessionDto>(HttpContext.Session, "currentUser");
+        if (sessionDto == null) // If they managed to execute this action without session data, something went wrong
         {
-            return RedirectToAction("Index", "Register");
+            logger.LogError("Settings page authenticated with an invalid session");
+            return RedirectToAction("Error", "Home");
         }
 
-        var existingShipment = await _db.Shipments
-            .Include(s => s.Order)
-            .FirstOrDefaultAsync(s => s.ShipmentId == id);
+        shipmentMethodRepository.Update(model.ShipmentMethod);
+        await shipmentMethodRepository.SaveChangesAsync();
 
-        if (existingShipment == null || existingShipment.Order.UserId != userId || existingShipment.Status != "pending")
+        return RedirectToAction("Index");
+    }
+
+    [AuthenticationFilter]
+    [HttpGet]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var sessionDto = SessionUtils.GetObjectFromJson<UserSessionDto>(HttpContext.Session, "currentUser");
+        if (sessionDto == null) // If they managed to execute this action without session data, something went wrong
         {
-            return NotFound();
+            logger.LogError("Settings page authenticated with an invalid session");
+            return RedirectToAction("Error", "Home");
         }
 
-        if (ModelState.IsValid)
+        var shipment = await shipmentMethodRepository.GetById(id);
+        shipment = await shipmentMethodRepository.LoadWithAddress(shipment); // Eager load the address navigation property
+
+        if (shipment.UserId != sessionDto.UserId)
         {
-            existingShipment.ShippingMethod = shipment.ShippingMethod;
-            existingShipment.ShippingDate = shipment.ShippingDate;
-            existingShipment.DeliveryAddress = shipment.DeliveryAddress;
-            
-            await _db.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("AccessDenied", "Home");
         }
 
         return View(shipment);
@@ -140,25 +164,23 @@ public class ShipmentController(AppDbContext db) : Controller
     // Process shipment deletion
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(ShipmentMethod shipmentMethod)
     {
-        int? userId = HttpContext.Session.GetInt32("UserId");
-        if (userId == null)
+        var sessionDto = SessionUtils.GetObjectFromJson<UserSessionDto>(HttpContext.Session, "currentUser");
+        if (sessionDto == null) // If they managed to execute this action without session data, something went wrong
         {
-            return RedirectToAction("Index", "Register");
+            logger.LogError("Settings page authenticated with an invalid session");
+            return RedirectToAction("Error", "Home");
         }
 
-        var shipment = await _db.Shipments
-            .Include(s => s.Order)
-            .FirstOrDefaultAsync(s => s.ShipmentId == id);
-
-        if (shipment == null || shipment.Order.UserId != userId || shipment.Status != "pending")
+        if (shipmentMethod.UserId != sessionDto.UserId) // User is somehow accessing a ShipmentMethod they do not own
         {
-            return NotFound();
+            return RedirectToAction("AccessDenied", "Home");
         }
 
-        _db.Shipments.Remove(shipment);
-        await _db.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
+        shipmentMethodRepository.Delete(shipmentMethod);
+        await db.SaveChangesAsync();
+
+        return RedirectToAction("Index");
     }
 }

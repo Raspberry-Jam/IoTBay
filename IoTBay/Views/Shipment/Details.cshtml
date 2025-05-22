@@ -1,4 +1,4 @@
-@model IoTBay.Models.Views.ShipmentViewModel
+@model IoTBay.Models.Entities.ShipmentMethod
 
 @{
     ViewData["Title"] = "Shipment Details";
@@ -26,39 +26,11 @@
                     <div class="row">
                         <div class="col-md-6">
                             <dl class="row">
-                                <dt class="col-sm-4">Shipment ID</dt>
-                                <dd class="col-sm-8">@Model.ShipmentId</dd>
-                                
-                                <dt class="col-sm-4">Order ID</dt>
-                                <dd class="col-sm-8">@Model.OrderId</dd>
+                                <dt class="col-sm-4">ID</dt>
+                                <dd class="col-sm-8">@Model.ShipmentMethodId</dd>
                                 
                                 <dt class="col-sm-4">Shipping Method</dt>
-                                <dd class="col-sm-8">@Model.ShippingMethod</dd>
-                                
-                                <dt class="col-sm-4">Shipping Date</dt>
-                                <dd class="col-sm-8">@Model.ShippingDate.ToString("yyyy-MM-dd")</dd>
-                            </dl>
-                        </div>
-                        <div class="col-md-6">
-                            <dl class="row">
-                                <dt class="col-sm-4">Status</dt>
-                                <dd class="col-sm-8">
-                                    @switch (Model.Status)
-                                    {
-                                        case "pending":
-                                            <span class="badge bg-warning text-dark">Pending</span>
-                                            break;
-                                        case "shipped":
-                                            <span class="badge bg-primary">Shipped</span>
-                                            break;
-                                        case "delivered":
-                                            <span class="badge bg-success">Delivered</span>
-                                            break;
-                                        default:
-                                            <span class="badge bg-secondary">@Model.Status</span>
-                                            break;
-                                    }
-                                </dd>
+                                <dd class="col-sm-8">@Model.Method</dd>
                             </dl>
                         </div>
                     </div>
@@ -72,23 +44,7 @@
                     <h5>Delivery Address</h5>
                 </div>
                 <div class="card-body">
-                    <p>@Model.DeliveryAddress</p>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <h5>Actions</h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-grid gap-2">
-                        @if (Model.Status == "pending")
-                        {
-                            <a asp-action="Edit" asp-route-id="@Model.ShipmentId" class="btn btn-primary">Edit</a>
-                            <a asp-action="Delete" asp-route-id="@Model.ShipmentId" class="btn btn-danger">Delete</a>
-                        }
-                        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-                    </div>
+                    <p>@Model.Address.ToString()</p>
                 </div>
             </div>
         </div>

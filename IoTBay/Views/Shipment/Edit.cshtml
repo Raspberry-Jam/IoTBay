@@ -1,4 +1,4 @@
-@model IoTBay.Models.Entities.Shipment
+@model IoTBay.Models.Views.ShipmentMethodEditViewModel
 
 @{
     ViewData["Title"] = "Edit Shipment";
@@ -12,26 +12,22 @@
             <form asp-action="Edit" method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 
-                <input type="hidden" asp-for="ShipmentId" />
-                <input type="hidden" asp-for="OrderId" />
-                <input type="hidden" asp-for="Status" />
+                <input type="hidden" asp-for="ShipmentMethod.UserId" />
+                <input type="hidden" asp-for="ShipmentMethod.AddressId" />
+                <input type="hidden" asp-for="ShipmentMethod.ShipmentMethodId" />
                 
                 <div class="form-group mb-3">
-                    <label asp-for="ShippingMethod" class="control-label"></label>
-                    <input asp-for="ShippingMethod" class="form-control" />
-                    <span asp-validation-for="ShippingMethod" class="text-danger"></span>
+                    <label asp-for="ShipmentMethod.Method" class="control-label"></label>
+                    <input asp-for="ShipmentMethod.Method" class="form-control" value="@Model.ShipmentMethod.Method"/>
+                    <span asp-validation-for="ShipmentMethod.Method" class="text-danger"></span>
                 </div>
 
                 <div class="form-group mb-3">
-                    <label asp-for="ShippingDate" class="control-label"></label>
-                    <input asp-for="ShippingDate" class="form-control" type="date" />
-                    <span asp-validation-for="ShippingDate" class="text-danger"></span>
-                </div>
-
-                <div class="form-group mb-3">
-                    <label asp-for="DeliveryAddress" class="control-label"></label>
-                    <textarea asp-for="DeliveryAddress" class="form-control" rows="3"></textarea>
-                    <span asp-validation-for="DeliveryAddress" class="text-danger"></span>
+                    <input asp-for="ShipmentMethod.Address.StreetLine1" type="text" placeholder="Street Line 1"/> <br/>
+                    <input asp-for="ShipmentMethod.Address.StreetLine2" type="text" placeholder="Street Line 2"/> <br/>
+                    <input asp-for="ShipmentMethod.Address.Suburb" type="text" placeholder="Suburb" /> <br/>
+                    @Html.DropDownListFor(m => m.ShipmentMethod.Address.State, Model.States, new { @class = "form-control" })
+                    <input asp-for="ShipmentMethod.Address.Postcode" type="text" placeholder="Postcode"/> <br/>
                 </div>
 
                 <div class="form-group">

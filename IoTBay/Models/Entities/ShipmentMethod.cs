@@ -5,7 +5,7 @@ namespace IoTBay.Models.Entities;
 
 public partial class ShipmentMethod
 {
-    public int ShipmentMethodId { get; }
+    public int ShipmentMethodId { get; set; }
 
     public int UserId { get; set; }
 

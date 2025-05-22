@@ -1,4 +1,4 @@
-@model IoTBay.Models.Views.ShipmentViewModel
+@model IoTBay.Models.Entities.ShipmentMethod
 
 @{
     ViewData["Title"] = "Delete Shipment";
@@ -27,70 +27,46 @@
                     <div class="row">
                         <div class="col-md-6">
                             <dl class="row">
-                                <dt class="col-sm-4">Shipment ID</dt>
-                                <dd class="col-sm-8">@Model.ShipmentId</dd>
-                                
-                                <dt class="col-sm-4">Order ID</dt>
-                                <dd class="col-sm-8">@Model.OrderId</dd>
+                                <dt class="col-sm-4">ID</dt>
+                                <dd class="col-sm-8">@Model.ShipmentMethodId</dd>
                                 
                                 <dt class="col-sm-4">Shipping Method</dt>
-                                <dd class="col-sm-8">@Model.ShippingMethod</dd>
-                                
-                                <dt class="col-sm-4">Shipping Date</dt>
-                                <dd class="col-sm-8">@Model.ShippingDate.ToString("yyyy-MM-dd")</dd>
-                            </dl>
-                        </div>
-                        <div class="col-md-6">
-                            <dl class="row">
-                                <dt class="col-sm-4">Status</dt>
-                                <dd class="col-sm-8">
-                                    @switch (Model.Status)
-                                    {
-                                        case "pending":
-                                            <span class="badge bg-warning text-dark">Pending</span>
-                                            break;
-                                        case "shipped":
-                                            <span class="badge bg-primary">Shipped</span>
-                                            break;
-                                        case "delivered":
-                                            <span class="badge bg-success">Delivered</span>
-                                            break;
-                                        default:
-                                            <span class="badge bg-secondary">@Model.Status</span>
-                                            break;
-                                    }
-                                </dd>
+                                <dd class="col-sm-8">@Model.Method</dd>
                             </dl>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
+        <div class="col-md-4">
             <div class="card mb-4">
                 <div class="card-header">
                     <h5>Delivery Address</h5>
                 </div>
                 <div class="card-body">
-                    <p>@Model.DeliveryAddress</p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">
-                    <h5>Confirm Delete</h5>
-                </div>
-                <div class="card-body">
-                    <form asp-action="Delete">
-                        <input type="hidden" asp-for="ShipmentId" />
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-danger">Delete</button>
-                            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-                        </div>
-                    </form>
+                    <p>@Model.Address.ToString()</p>
                 </div>
             </div>
         </div>
     </div>
-</div> 
+        
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Confirm Delete</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" asp-for="UserId" />
+                    <input type="hidden" asp-for="AddressId" />
+                    <input type="hidden" asp-for="ShipmentMethodId" />
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
