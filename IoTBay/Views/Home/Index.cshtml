@@ -32,7 +32,10 @@
     <a asp-controller="User" asp-action="Index">Register New User</a>
     <div></div>
     <a asp-controller="Catalogue" asp-action="Index">Browse My Store</a>
-    
+    <div></div>
+    <a asp-controller="SuppliersManage" asp-action="Index" class="btn btn-info">Manage Suppliers</a>
+    <div></div>
+
     <p>Counter: @Model.Counter</p>
     <form asp-action="IncreaseCounter" asp-controller="Home" method="post">
         <input type="hidden" asp-for="Counter" value=@Model.Counter /> @* Bind the Counter to persist when sending request *@

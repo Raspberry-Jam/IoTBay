@@ -1,0 +1,87 @@
+@model IoTBay.Models.Entities.Supplier
+
+@{
+    ViewData["Title"] = "Edit Supplier";
+}
+
+<h2>Edit Supplier</h2>
+
+<form asp-action="Edit" method="post">
+    <!-- Hidden input primary key -->
+    <input type="hidden" asp-for="SupplierId" />
+
+    <fieldset>
+        <legend>Supplier Information</legend>
+        <div class="form-group">
+            <label asp-for="CompanyName" class="control-label"></label>
+            <input asp-for="CompanyName" class="form-control" />
+            <span asp-validation-for="CompanyName" class="text-danger"></span>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Contact Information</legend>
+        <div class="form-group">
+            <label asp-for="Contact.GivenName" class="control-label"></label>
+            <input asp-for="Contact.GivenName" class="form-control" />
+            <span asp-validation-for="Contact.GivenName" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Contact.Surname" class="control-label"></label>
+            <input asp-for="Contact.Surname" class="form-control" />
+            <span asp-validation-for="Contact.Surname" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Contact.Email" class="control-label"></label>
+            <input asp-for="Contact.Email" class="form-control" />
+            <span asp-validation-for="Contact.Email" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Contact.PhoneNumber" class="control-label"></label>
+            <input asp-for="Contact.PhoneNumber" class="form-control" />
+            <span asp-validation-for="Contact.PhoneNumber" class="text-danger"></span>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Address Information</legend>
+        <div class="form-group">
+            <label asp-for="Address.StreetLine1" class="control-label"></label>
+            <input asp-for="Address.StreetLine1" class="form-control" />
+            <span asp-validation-for="Address.StreetLine1" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Address.StreetLine2" class="control-label"></label>
+            <input asp-for="Address.StreetLine2" class="form-control" />
+            <span asp-validation-for="Address.StreetLine2" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Address.Suburb" class="control-label"></label>
+            <input asp-for="Address.Suburb" class="form-control" />
+            <span asp-validation-for="Address.Suburb" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Address.State" class="control-label"></label>
+            <input asp-for="Address.State" class="form-control" />
+            <span asp-validation-for="Address.State" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Address.Postcode" class="control-label"></label>
+            <input asp-for="Address.Postcode" class="form-control" />
+            <span asp-validation-for="Address.Postcode" class="text-danger"></span>
+        </div>
+    </fieldset>
+
+    <div asp-validation-summary="ModelOnly" class="alert alert-warning alert-dismissible fade show">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="form-group">
+        <input type="submit" value="Save Changes" class="btn btn-primary" />
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

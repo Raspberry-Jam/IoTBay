@@ -62,6 +62,9 @@ public class Program
             var addressQuery = from a in ctx.Addresses
                 where a.AddressId >= 1
                 select a;
+            var contactQuery = from c in ctx.Contacts
+                where c.ContactId >= 1
+                select c;
             var productQuery = from p in ctx.Products
                 where p.ProductId >= 1
                 select p;
@@ -71,85 +74,107 @@ public class Program
             var orderQuery = from o in ctx.Orders
                 where o.OrderId >= 1
                 select o;
-
-            if (!productQuery.Any())
+            var supplierQuery = from s in ctx.Suppliers
+                where s.SupplierId >= 1
+                select s;
+            if (!contactQuery.Any())
             {
-                var product = new Product
+                var contact = new Contact
                 {
-                    Name = "Keyboard",
-                    Type = "Keyboard",
-                    Price = 32.05,
-                    ShortDescription = "Standard QWERTY layout USB Keyboard",
-                    FullDescription =
-                        "This Keyboard is a part of IotBay's Standard Office Equipment Range and has full USB capability, is compatible with Windows, MacOS and Linux"
+                    Email = "test@test.com",
+                    GivenName = "Tester",
+                    Surname = "Debugger"
                 };
-                ctx.Products.Add(product);
-                if (!userQuery.Any())
+                ctx.Contacts.Add(contact);
+                var supplierContact = new Contact
                 {
-                    var contact = new Contact
+                    Email = "supplier@supplier.com",
+                    GivenName = "John",
+                    PhoneNumber = "0011223344"
+                };
+                if (!productQuery.Any())
+                {
+                    var product = new Product
                     {
-                        Email = "test@test.com",
-                        GivenName = "Tester",
-                        Surname = "Debugger"
+                        Name = "Keyboard",
+                        Type = "Keyboard",
+                        Price = 32.05,
+                        ShortDescription = "Standard QWERTY layout USB Keyboard",
+                        FullDescription =
+                            "This Keyboard is a part of IotBay's Standard Office Equipment Range and has full USB capability, is compatible with Windows, MacOS and Linux"
                     };
-                    ctx.Contacts.Add(contact);
-                    var passwordHash = Utils.HashUtils.HashPassword("password", out var salt);
-                    var user = new User
+                    ctx.Products.Add(product);
+                    if (!userQuery.Any())
                     {
-                        PasswordHash = passwordHash,
-                        PasswordSalt = salt,
-                        Contact = contact,
-                        Role = Role.Customer
-                    };
-                    ctx.Users.Add(user);
-                    if (!orderQuery.Any())
-                    {
-                        var order = new Order
+                        var passwordHash = Utils.HashUtils.HashPassword("password", out var salt);
+                        var user = new User
                         {
-                            User = user,
-                            ShipmentMethodId = -1,
-                            PaymentMethodId = -1,
-                            OrderDate = DateOnly.FromDateTime(DateTime.Now)
+                            PasswordHash = passwordHash,
+                            PasswordSalt = salt,
+                            Contact = contact,
+                            Role = Role.Customer
                         };
-                        order.OrderProducts = new List<OrderProduct>
+                        ctx.Users.Add(user);
+                        if (!orderQuery.Any())
                         {
-                            new() {
-                                Order = order,
-                                Product = product,
-                                Quantity = 13
-                            }
-                        };
-                        ctx.Orders.Add(order);
+                            var order = new Order
+                            {
+                                User = user,
+                                ShipmentMethodId = -1,
+                                PaymentMethodId = -1,
+                                OrderDate = DateOnly.FromDateTime(DateTime.Now)
+                            };
+                            order.OrderProducts = new List<OrderProduct>
+                            {
+                                new() {
+                                    Order = order,
+                                    Product = product,
+                                    Quantity = 13
+                                }
+                            };
+                            ctx.Orders.Add(order);
+                        }
                     }
                 }
-            }
-            else
-            {
-                Console.WriteLine("Products already exist");
+                else
+                {
+                    Console.WriteLine("Products already exist");
+                }
+                if (!addressQuery.Any())
+                {
+                    ctx.Addresses.Add(new Address
+                    {
+                        StreetLine1 = "123 Test Street",
+                        Suburb = "Springfield",
+                        State = State.ACT,
+                        Postcode = "1234"
+                    });
+                    var supplierAddress = new Address
+                    {
+                        StreetLine1 = "245 Bug Blvd",
+                        StreetLine2 = "Unit 87",
+                        Suburb = "Woodland",
+                        State = State.NSW,
+                        Postcode = "8823"
+                    };
+                    ctx.Addresses.Add(supplierAddress);
+                    if (!supplierQuery.Any())
+                    {
+                        var supplier1 = new Supplier
+                        {
+                            Address = supplierAddress,
+                            Contact = supplierContact,
+                            CompanyName = "Supplier Co"
+                        };
+                        ctx.Suppliers.Add(supplier1);
+                    }
+                } 
+                else
+                {
+                    Console.WriteLine("Addresses already exist");
+                }
             }
             
-            if (!addressQuery.Any())
-            {
-                ctx.Addresses.Add(new Address
-                {
-                    StreetLine1 = "123 Test Street",
-                    Suburb = "Springfield",
-                    State = State.ACT,
-                    Postcode = "1234"
-                });
-                ctx.Addresses.Add(new Address
-                {
-                    StreetLine1 = "245 Bug Blvd",
-                    StreetLine2 = "Unit 87",
-                    Suburb = "Woodland",
-                    State = State.NSW,
-                    Postcode = "8823"
-                });
-            } 
-            else
-            {
-                Console.WriteLine("Addresses already exist");
-            }
             ctx.SaveChanges();
         }
 

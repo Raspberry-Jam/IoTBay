@@ -1,0 +1,37 @@
+@model IoTBay.Models.Entities.Supplier
+
+@{
+    ViewData["Title"] = "Delete Supplier";
+}
+
+<h2>Delete Supplier</h2>
+<h3>Are you sure you want to delete this supplier?</h3>
+
+<div>
+    <h4>@Model.CompanyName</h4>
+    <p>
+        <strong>Supplier ID:</strong> @Model.SupplierId<br />
+        <strong>Contact:</strong> 
+        @if (Model.Contact != null) {
+            @Model.Contact.GivenName @Model.Contact.Surname
+        } else {
+            <em>Not available</em>
+        }
+        <br />
+        <strong>Address:</strong> 
+        @if (Model.Address != null) {
+            @Model.Address.StreetLine1 @Model.Address.Suburb @Model.Address.State @Model.Address.Postcode
+        } else {
+            <em>Not available</em>
+        }
+    </p>
+</div>
+
+<form asp-action="Delete" method="post">
+    <!-- Hidden field to carry the supplier ID -->
+    <input type="hidden" asp-for="SupplierId" />
+    <div class="form-group">
+        <input type="submit" value="Confirm Delete" class="btn btn-danger" />
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>

@@ -1,0 +1,101 @@
+@model IoTBay.Models.Entities.Supplier
+
+@{
+    ViewData["Title"] = "Create Supplier";
+}
+
+<h2>Create Supplier</h2>
+
+<form asp-action="Create" method="post" class="form-horizontal">
+    <fieldset>
+        <legend>Supplier Information</legend>
+        
+        <!-- Company Name -->
+        <div class="form-group">
+            <label asp-for="CompanyName" class="control-label"></label>
+            <input asp-for="CompanyName" class="form-control" />
+            <span asp-validation-for="CompanyName" class="text-danger"></span>
+        </div>
+    </fieldset>
+    
+    <fieldset>
+        <legend>Contact Information</legend>
+        
+        <!-- Contact: Given Name -->
+        <div class="form-group">
+            <label asp-for="Contact.GivenName" class="control-label"></label>
+            <input asp-for="Contact.GivenName" class="form-control" />
+            <span asp-validation-for="Contact.GivenName" class="text-danger"></span>
+        </div>
+
+        <!-- Contact: Surname -->
+        <div class="form-group">
+            <label asp-for="Contact.Surname" class="control-label"></label>
+            <input asp-for="Contact.Surname" class="form-control" />
+            <span asp-validation-for="Contact.Surname" class="text-danger"></span>
+        </div>
+
+        <!-- Contact: Email -->
+        <div class="form-group">
+            <label asp-for="Contact.Email" class="control-label"></label>
+            <input asp-for="Contact.Email" class="form-control" />
+            <span asp-validation-for="Contact.Email" class="text-danger"></span>
+        </div>
+
+        <!-- Contact: Phone Number -->
+        <div class="form-group">
+            <label asp-for="Contact.PhoneNumber" class="control-label"></label>
+            <input asp-for="Contact.PhoneNumber" class="form-control" />
+            <span asp-validation-for="Contact.PhoneNumber" class="text-danger"></span>
+        </div>
+    </fieldset>
+    
+    <fieldset>
+        <legend>Address Information</legend>
+        
+        <!-- Address: StreetLine1 -->
+        <div class="form-group">
+            <label asp-for="Address.StreetLine1" class="control-label"></label>
+            <input asp-for="Address.StreetLine1" class="form-control" />
+            <span asp-validation-for="Address.StreetLine1" class="text-danger"></span>
+        </div>
+        
+        <!-- Address: StreetLine2 (Optional) -->
+        <div class="form-group">
+            <label asp-for="Address.StreetLine2" class="control-label"></label>
+            <input asp-for="Address.StreetLine2" class="form-control" />
+            <span asp-validation-for="Address.StreetLine2" class="text-danger"></span>
+        </div>
+        
+        <!-- Address: Suburb -->
+        <div class="form-group">
+            <label asp-for="Address.Suburb" class="control-label"></label>
+            <input asp-for="Address.Suburb" class="form-control" />
+            <span asp-validation-for="Address.Suburb" class="text-danger"></span>
+        </div>
+        
+        <!-- Address: State -->
+        <div class="form-group">
+            <label asp-for="Address.State" class="control-label"></label>
+            <input asp-for="Address.State" class="form-control" />
+            <span asp-validation-for="Address.State" class="text-danger"></span>
+        </div>
+        
+        <!-- Address: Postcode -->
+        <div class="form-group">
+            <label asp-for="Address.Postcode" class="control-label"></label>
+            <input asp-for="Address.Postcode" class="form-control" />
+            <span asp-validation-for="Address.Postcode" class="text-danger"></span>
+        </div>
+    </fieldset>
+    <div></div>
+    
+    <div asp-validation-summary="ModelOnly" class="alert alert-warning alert-dismissible fade show">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="form-group">
+        <input type="submit" value="Create" class="btn btn-primary" />
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>

@@ -1,0 +1,47 @@
+@model IEnumerable<IoTBay.Models.Entities.Supplier>
+@{
+    ViewData["Title"] = "Supplier List";
+}
+
+<h1>Supplier List</h1>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Supplier ID</th>
+        <th>Company Name</th>
+        <th>Contact Name</th>
+        <th>Address</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var supplier in Model)
+    {
+        <tr>
+            <td>@supplier.SupplierId</td>
+            <td>@supplier.CompanyName</td>
+            <td>
+                @if(supplier.Contact != null)
+                {
+                    @supplier.Contact.GivenName @supplier.Contact.Surname
+                }
+            </td>
+            <td>
+                @if(supplier.Address != null)
+                {
+                    @supplier.Address.StreetLine1 @supplier.Address.Suburb
+                }
+            </td>
+            <td>
+                <!-- Links to details, edit, delete actions -->
+                <a asp-action="Details" asp-route-id="@supplier.SupplierId">Details</a> |
+                <a asp-action="Edit" asp-route-id="@supplier.SupplierId">Edit</a> |
+                <a asp-action="Delete" asp-route-id="@supplier.SupplierId">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<a asp-action="Create" class="btn btn-primary">Create New Supplier</a>

@@ -1,0 +1,54 @@
+@model IoTBay.Models.Entities.Supplier
+
+@{
+    ViewData["Title"] = "Supplier Details";
+}
+
+<div class="container mt-4">
+    <h2>Supplier Details</h2>
+    <div class="card">
+        <div class="card-body">
+            <!-- Display the supplier's company name and ID -->
+            <h3 class="card-title">@Model.CompanyName</h3>
+            <p>
+                <strong>Supplier ID:</strong> @Model.SupplierId <br />
+            </p>
+
+            <!-- Display contact information if available -->
+            <h4>Contact Information</h4>
+            @if(Model.Contact != null)
+            {
+                <p>
+                    <strong>Name:</strong> @Model.Contact.GivenName @Model.Contact.Surname <br/>
+                    <strong>Email:</strong> @Model.Contact.Email <br/>
+                    <strong>Phone:</strong> @Model.Contact.PhoneNumber
+                </p>
+            }
+            else
+            {
+                <p><em>No contact information available.</em></p>
+            }
+
+            <!-- Display address information if available -->
+            <h4>Address</h4>
+            @if(Model.Address != null)
+            {
+                <p>
+                    @Model.Address.StreetLine1 <br/>
+                    @if (!string.IsNullOrWhiteSpace(Model.Address.StreetLine2))
+                    {
+                        @Model.Address.StreetLine2 <br/>
+                    }
+                    @Model.Address.Suburb, @Model.Address.State, @Model.Address.Postcode
+                </p>
+            }
+            else
+            {
+                <p><em>No address available.</em></p>
+            }
+            
+            <a asp-action="Edit" asp-route-id="@Model.SupplierId" class="btn btn-primary">Edit Supplier</a>
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        </div>
+    </div>
+</div>
