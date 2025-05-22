@@ -16,18 +16,18 @@
     </tr>
     </thead>
     <tbody>
-    @foreach (var item in Model.Items)
+    @foreach (var product in Model.Items)
     {
         <tr>
-            <td>@item.ProductName</td>
-            <td>@item.Quantity</td>
-            <td>@item.Price.ToString("C")</td>
-            <td>@item.TotalPrice.ToString("C")</td>
+            <td>@product.ProductName</td>
+            <td>@product.Quantity</td>
+            <td>@product.Price</td>
+            <td>@product.TotalPrice</td>
         </tr>
     }
     </tbody>
 </table>
 
 <div>
-    <strong>Total Price: @Model.TotalPrice.ToString("C")</strong>
+    <strong>Total Price: @Model.TotalPrice</strong>
 </div>

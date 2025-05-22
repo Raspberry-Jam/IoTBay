@@ -6,47 +6,39 @@ namespace IoTBay.Models.Views;
 public class ProductEditModel : IValidatableObject
 {
     [Required]
-    public required int ProductId { get; set; }
+    public required int ProductId { get; init; }
     
     [Required]
-    public required string Name { get; set; }
+    public required string Name { get; init; }
     
     [Required]
-    public required string Type { get; set; }  // This will hold the selected category (e.g. name or ID)
+    public required string Type { get; init; } // Category is "Type" in our DB
 
     [Required]
-    [Range(0.01, double.MaxValue,ErrorMessage = "Price must be Larger than 0.")]
-    public required double? Price { get; set; }
+    public required double? Price { get; init; }
     
     [Required]
-    
-    public int Stock { get; set; }
+    public int Stock { get; init; }
     
     [Required]
-    public required string ShortDescription { get; set; }
+    public required string ShortDescription { get; init; }
 
     [Required]
-    public string? FullDescription { get; set; }
-    
-    // Dropdown source
-    public List<SelectListItem> ProductCategories { get; set; } = new(); 
+    public string? FullDescription { get; init; }
+    public List<SelectListItem> ProductCategories { get; init; } = []; 
+    // List of Categories
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        // Validate Price for maximum 2 decimal places
-        if (Math.Abs((double)(Math.Round((double)Price!, 2) - Price)) > 0.000001)
+        if (double.Round((double)Price!, 2) == Price)
         {
-            // Return a validation message for the Price field
-            yield return new ValidationResult("Price 2 d places.", new[] { nameof(Price) });
+            yield return new ValidationResult("Price must have at most 2 decimal places.", new[] { nameof(Price) });
         }
         
         if (Stock < 0)
         {
-            // Return a validation message for the Price field
             yield return new ValidationResult("Cannot have negative Stock", new[] { nameof(Stock) });
         }
-
-        // Add other custom validation logic as needed...
     }
 
 }

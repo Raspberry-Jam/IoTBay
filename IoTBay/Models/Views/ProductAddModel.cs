@@ -36,18 +36,13 @@ public class ProductAddModel : IValidatableObject
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        // Validate Price for maximum 2 decimal places
-        if (Math.Abs(Math.Round(Price, 2) - Price) > 0.000001)
+        if (double.Round((double)Price!, 2) == Price)
         {
-            // Return a validation message for the Price field
             yield return new ValidationResult("Price 2 d places.", new[] { nameof(Price) });
         }
-
-        // Add other custom validation logic as needed...
         
         if (Stock < 0)
         {
-            // Return a validation message for the Price field
             yield return new ValidationResult("Cannot have negative Stock", new[] { nameof(Stock) });
         }
     }

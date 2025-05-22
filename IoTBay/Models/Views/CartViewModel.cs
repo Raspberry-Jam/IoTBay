@@ -7,10 +7,10 @@ namespace IoTBay.Models.Views
         public string ProductName { get; set; } = string.Empty;  // The name of the product
         public int Quantity { get; set; }  // Quantity of the product in the cart
         public int Stock { get; set; }  // Available stock of the product
-        public decimal Price { get; set; }  // Price per unit of the product
+        public double Price { get; set; }  // Price per unit of the product
 
         // Calculated property for total price for this cart item (Price * Quantity)
-        public decimal TotalPrice => Price * Quantity;  
+        public double TotalPrice => Price * Quantity;  
     }
 
     // CartViewModel class represents the entire cart, including a list of cart items and the total price.
@@ -20,7 +20,7 @@ namespace IoTBay.Models.Views
         public List<CartItemViewModel> Items { get; set; } = new List<CartItemViewModel>();
 
         // Total price for all items in the cart.
-        public decimal TotalPrice { get; set; }
+        public double TotalPrice { get; set; }
 
         // Constructor that calculates the total price of all items in the cart.
         public CartViewModel()
