@@ -6,8 +6,7 @@
 
 <h2 class="text-center mb-4">Product Catalogue</h2>
 <a asp-controller="Catalogue" asp-action="ProductAdd">Add New Product!</a>
-
-<!-- Filter Form -->
+@* Filter Logic *@
 <form asp-controller="Catalogue" asp-action="Index" method="get" class="mb-4">
     <div class="row">
         <div class="col-md-4">
@@ -34,9 +33,9 @@
             <button type="submit" class="btn btn-primary w-100">Filter</button>
         </div>
     </div>
+    
 </form>
-
-<!-- Product Grid -->
+@* Rows and Columns for Products to give it a grid *@
 <div class="container">
     <div class="row">
         @if (!Model.Products.Any())
@@ -61,8 +60,19 @@
                             <p class="card-text"><strong>Type:</strong>@product.Type</p>
                         </div>
                     </div>
+                    
                 </a>
+                <form method="post" asp-controller="Cart" asp-action="Index">
+                    <input type="hidden" name="ProductId" value="@product.ProductId" />
+                    <input type="number" step="1" min="1" name="Quantity" class="form-control" placeholder="Quantity" />
+                    <button type="submit" class="btn btn-primary w-100">Add to Cart</button>
+                </form>
             </div>
+            
+            
+
+
+            
         }
 
     </div>

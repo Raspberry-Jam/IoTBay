@@ -1,0 +1,33 @@
+@{
+    ViewData["Title"] = "Cart Index Page";
+}
+
+@model IoTBay.Models.Views.CartViewModel
+
+<h2>Your Cart</h2>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Product Name</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Total Price</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.Items)
+    {
+        <tr>
+            <td>@item.ProductName</td>
+            <td>@item.Quantity</td>
+            <td>@item.Price.ToString("C")</td>
+            <td>@item.TotalPrice.ToString("C")</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<div>
+    <strong>Total Price: @Model.TotalPrice.ToString("C")</strong>
+</div>

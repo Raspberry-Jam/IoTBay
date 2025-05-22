@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using IoTBay.Models;
 using IoTBay.Models.Entities;
 using IoTBay.Models.Views;
@@ -9,57 +10,76 @@ namespace IoTBay.Controllers;
 
 public class CatalogueController(ILogger<CatalogueController> logger, AppDbContext db) : Controller
 {
+    [HttpGet]
     public IActionResult Index(string? searchQuery, string? selectedCategory, decimal? minPrice, decimal? maxPrice)
+{
+    // Get all products from the database (no filtering yet)
+    var allProducts = db.Products.Where(p => p.ProductId > 0).OrderBy(p => p.ProductId);
+
+    // Get distinct categories for the dropdown
+    var categories = allProducts.Select(p => p.Type).Distinct().ToList();
+    var categorySelectList = categories.Select(c => new SelectListItem
     {
-        // Get all products from the database
-        var allProducts = from product in db.Products
-            where product.ProductId > 0
-            orderby product.ProductId
-            select product;
+        Value = c,
+        Text = c
+    }).ToList();
 
-        // Get distinct categories for the dropdown
-        var categories = allProducts.Select(p => p.Type).Distinct().ToList();
-        var categorySelectList = categories.Select(c => new SelectListItem
+    // Create view model for displaying categories
+    var viewModel = new CatalogueFilterViewModel
+    {
+        SearchQuery = searchQuery,
+        SelectedCategory = selectedCategory,
+        MinPrice = minPrice,
+        MaxPrice = maxPrice,
+        ProductCategories = categorySelectList
+    };
+
+    // Perform manual validation
+    var validationContext = new ValidationContext(viewModel);
+    var validationResults = new List<ValidationResult>();
+    var isValid = Validator.TryValidateObject(viewModel, validationContext, validationResults, true);
+
+    // If invalid, just return the normal unfiltered page with validation errors
+    if (!isValid)
+    {
+        foreach (var validationResult in validationResults)
         {
-            Value = c,
-            Text = c
-        }).ToList();
+            foreach (var memberName in validationResult.MemberNames)
+            {
+                ModelState.AddModelError(memberName, validationResult.ErrorMessage!);
+            }
+        }
 
-        // Apply filters
-        var query = allProducts.Where(p =>
-            (string.IsNullOrEmpty(searchQuery) || p.Name.ToLower().Contains(searchQuery.ToLower())) &&
-            (string.IsNullOrEmpty(selectedCategory) || p.Type == selectedCategory) &&
-            (!minPrice.HasValue || p.Price >= (double?)minPrice) &&
-            (!maxPrice.HasValue || p.Price <= (double?)maxPrice)
-        );
-        logger.LogInformation(query.ToQueryString());
-        var filtered = query.ToList();
-
-        // Map the filtered products to ProductEditModel
-        var productEditModels = filtered.Select(p => new ProductEditModel
-        {
-            ProductId = p.ProductId,
-            Name = p.Name,
-            ShortDescription = p.ShortDescription!,
-            Price = p.Price,
-            Stock = p.Stock,
-            Type = p.Type
-        }).ToList();
-
-        // Create the view model and assign the mapped products
-        var viewModel = new CatalogueFilterViewModel
-        {
-            SearchQuery = searchQuery,
-            SelectedCategory = selectedCategory,
-            MinPrice = minPrice,
-            MaxPrice = maxPrice,
-            ProductCategories = categorySelectList,
-            Products = productEditModels, // Now you're passing a list of ProductEditModel
-        };
-
-        // Return the view with the view model
-        return View(viewModel);
+        // Return view without filtering the products (i.e., return the normal Index)
+        viewModel.Products = new List<ProductEditModel>();
+        return View(viewModel);  // Just show the normal page, no filtering
     }
+
+    // Apply filters if valid
+    var query = allProducts.Where(p =>
+        (string.IsNullOrEmpty(searchQuery) || p.Name.ToLower().Contains(searchQuery.ToLower())) &&
+        (string.IsNullOrEmpty(selectedCategory) || p.Type == selectedCategory) &&
+        (!minPrice.HasValue || p.Price >= (double?)minPrice) &&
+        (!maxPrice.HasValue || p.Price <= (double?)maxPrice)
+    );
+
+    var filteredProducts = query.ToList();
+
+    // Map filtered products to ProductEditModel
+    viewModel.Products = filteredProducts.Select(p => new ProductEditModel
+    {
+        ProductId = p.ProductId,
+        Name = p.Name,
+        ShortDescription = p.ShortDescription!,
+        Price = p.Price,
+        Stock = p.Stock,
+        Type = p.Type
+    }).ToList();
+
+    // Return filtered results
+    return View(viewModel);
+}
+
 
     public IActionResult ProductPage(int id)
     {
@@ -93,7 +113,7 @@ public class CatalogueController(ILogger<CatalogueController> logger, AppDbConte
             Type = null!,
             ShortDescription = null!,
             ProductCategories = categories,
-            ImageFile = null
+            ImageFile = null!
         };
 
         return View(model);
