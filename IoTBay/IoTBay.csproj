@@ -26,4 +26,21 @@
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\Photos\1.webp" />
+      <_ContentIncludedByDefault Remove="wwwroot\Photos\2.jpg" />
+      <_ContentIncludedByDefault Remove="wwwroot\Photos\3.jpg" />
+      <_ContentIncludedByDefault Remove="wwwroot\Photos\4.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\Photos\5.jpg" />
+      <_ContentIncludedByDefault Remove="wwwroot\Photos\6.jpg" />
+      <_ContentIncludedByDefault Remove="wwwroot\Photos\7.webp" />
+      <_ContentIncludedByDefault Remove="wwwroot\Photos\Photos\1.webp" />
+      <_ContentIncludedByDefault Remove="wwwroot\Photos\Photos\2.jpg" />
+      <_ContentIncludedByDefault Remove="wwwroot\Photos\Photos\3.jpg" />
+      <_ContentIncludedByDefault Remove="wwwroot\Photos\Photos\4.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\Photos\Photos\5.jpg" />
+      <_ContentIncludedByDefault Remove="wwwroot\Photos\Photos\6.jpg" />
+      <_ContentIncludedByDefault Remove="wwwroot\Photos\Photos\7.webp" />
+    </ItemGroup>
+
 </Project>
