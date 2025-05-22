@@ -1,0 +1,108 @@
+@model IoTBay.Models.Views.OrderViewModel
+@{
+    ViewBag.Title = "Create Order";
+    Layout = "_Layout";
+    var products = ViewBag.Products as List<IoTBay.Models.Entities.Product>;
+}
+
+<h2>Create Order</h2>
+
+<form asp-action="Create" method="post" id="orderForm">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" asp-for="UserId" value="0" />
+    <input type="hidden" asp-for="OrderDate" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+
+    <!-- ✅ Payment Method Section -->
+    <div class="form-group">
+        <label asp-for="PaymentMethodId" class="control-label"></label>
+
+        @if (Model.PaymentMethodOptions != null && Model.PaymentMethodOptions.Any())
+        {
+            <select asp-for="PaymentMethodId" asp-items="Model.PaymentMethodOptions" class="form-control"></select>
+            <span asp-validation-for="PaymentMethodId" class="text-danger"></span>
+        }
+        else
+        {
+            <div class="text-muted">No payment methods available. Please add one below.</div>
+        }
+
+        <div class="mt-2">
+            <a asp-controller="PaymentMethod"
+               asp-action="SelectCard"
+               asp-route-returnUrl="/Order/Create"
+               class="btn btn-outline-primary btn-sm">
+                Select Payment Method
+            </a>
+        </div>
+    </div>
+
+    <!-- ✅ Shipment Method Section -->
+    <div class="form-group">
+        <label asp-for="ShipmentMethodId" class="control-label"></label>
+
+        @if (Model.ShipmentMethodOptions != null && Model.ShipmentMethodOptions.Any())
+        {
+            <select asp-for="ShipmentMethodId" asp-items="Model.ShipmentMethodOptions" class="form-control"></select>
+            <span asp-validation-for="ShipmentMethodId" class="text-danger"></span>
+        }
+        else
+        {
+            <div class="text-muted">No shipment methods available. Please add one below.</div>
+        }
+
+        <div class="mt-2">
+            <a asp-controller="ShipmentMethod"
+               asp-action="SelectShipment"
+               asp-route-returnUrl="/Order/Create"
+               class="btn btn-outline-secondary btn-sm">
+                Select Shipment Method
+            </a>
+        </div>
+    </div>
+
+    <!-- Products Table -->
+    <div>
+        <label>Products:</label>
+        <table class="table">
+            <thead>
+                <tr><th>Name</th><th>Quantity</th></tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < products.Count; i++)
+                {
+                    <tr>
+                        <td>@products[i].Name</td>
+                        <td>
+                            <input type="hidden" name="productIds" value="@products[i].ProductId" />
+                            <input type="number" name="amounts" min="0" value="0" class="form-control" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <button type="submit" name="actionType" value="save" class="btn btn-primary">Save Order</button>
+    <button type="submit" name="actionType" value="view" class="btn btn-secondary">View Order</button>
+</form>
+
+<!-- Latest Order Shortcuts -->
+<div class="mt-3">
+    @if (ViewBag.LatestOrderId != null)
+    {
+        <a asp-action="Edit" asp-route-id="@ViewBag.LatestOrderId" class="btn btn-info">Go to Edit Page (Latest Order)</a>
+        <a asp-action="Details" asp-route-id="@ViewBag.LatestOrderId" class="btn btn-secondary">Go to Details Page (Latest Order)</a>
+    }
+    else
+    {
+        <button class="btn btn-info" disabled>No orders to edit</button>
+        <button class="btn btn-secondary" disabled>No orders to view</button>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

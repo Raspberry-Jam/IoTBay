@@ -1,0 +1,37 @@
+@model IoTBay.Models.Entities.Order
+@{
+    ViewBag.Title = "Edit Order";
+    Layout = "_Layout";
+    var products = ViewBag.Products as List<IoTBay.Models.Entities.Product>;
+    var orderProducts = Model.OrderProducts.ToDictionary(op => op.ProductId, op => op.Quantity);
+}
+
+<h2>Edit Order</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" name="id" value="@Model.OrderId" />
+
+    <div>
+        <label>Products:</label>
+        <table class="table">
+            <thead>
+            <tr><th>Name</th><th>Quantity</th></tr>
+            </thead>
+            <tbody>
+            @for (int i = 0; i < products.Count; i++)
+            {
+                var pid = products[i].ProductId;
+                <tr>
+                    <td>@products[i].Name</td>
+                    <td>
+                        <input type="hidden" name="productIds" value="@pid" />
+                        <input type="number" name="amounts" value="@(orderProducts.ContainsKey(pid) ? orderProducts[pid] : 0)" min="0" />
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update Order</button>
+</form>

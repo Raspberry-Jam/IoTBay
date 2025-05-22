@@ -67,21 +67,75 @@ public class Program
             
             if (!addressQuery.Any())
             {
-                ctx.Addresses.Add(new Address
+                var address1 = new Address { StreetLine1 = "123 Test Street", Suburb = "Springfield", State = State.ACT, Postcode = "1234" };
+                var address2 = new Address { StreetLine1 = "245 Bug Blvd", StreetLine2 = "Unit 87", Suburb = "Woodland", State = State.NSW, Postcode = "8823" };
+                ctx.Addresses.Add(address1);
+                ctx.Addresses.Add(address2);
+                var contact1 = new Contact { Email = "user1@example.com", GivenName = "User", Surname = "One" };
+                var contact2 = new Contact { Email = "user2@example.com", GivenName = "User", Surname = "Two" };
+                var contact3 = new Contact { Email = "user3@example.com", GivenName = "User", Surname = "Three" };
+                ctx.Contacts.Add(contact1);
+                ctx.Contacts.Add(contact2);
+                ctx.Contacts.Add(contact3);
+                ctx.SaveChanges();
+                
+                var user1 = new User { Role = Role.Customer, PasswordHash = "password", PasswordSalt = "salt", ContactId = contact1.ContactId };
+                var user2 = new User { Role = Role.Customer, PasswordHash = "password", PasswordSalt = "salt", ContactId = contact2.ContactId };
+                var user3 = new User { Role = Role.Customer, PasswordHash = "password", PasswordSalt = "salt", ContactId = contact3.ContactId };
+                ctx.Users.Add(user1);
+                ctx.Users.Add(user2);
+                ctx.Users.Add(user3);
+                ctx.SaveChanges();
+                
+                var address1FromDb = ctx.Addresses.First();
+                var address2FromDb = ctx.Addresses.Skip(1).First();
+                var user1FromDb = ctx.Users.First();
+                var user2FromDb = ctx.Users.Skip(1).First();
+                var user3FromDb = ctx.Users.Skip(2).First();
+
+                ctx.ShipmentMethods.Add(new ShipmentMethod
                 {
-                    StreetLine1 = "123 Test Street",
-                    Suburb = "Springfield",
-                    State = State.ACT,
-                    Postcode = "1234"
+                    UserId = user1FromDb.UserId,
+                    AddressId = address1FromDb.AddressId,
+                    Method = "Standard"
                 });
-                ctx.Addresses.Add(new Address
+                ctx.PaymentMethods.Add(new PaymentMethod
                 {
-                    StreetLine1 = "245 Bug Blvd",
-                    StreetLine2 = "Unit 87",
-                    Suburb = "Woodland",
-                    State = State.NSW,
-                    Postcode = "8823"
+                    UserId = user1FromDb.UserId,
+                    CardNumber = "1234123412341234",
+                    Cvv = "123",
+                    Expiry = new DateOnly(2027, 5, 22)
                 });
+                
+                ctx.ShipmentMethods.Add(new ShipmentMethod
+                {
+                    UserId = user2FromDb.UserId,
+                    AddressId = address2FromDb.AddressId,
+                    Method = "Express"
+                });
+                ctx.PaymentMethods.Add(new PaymentMethod
+                {
+                    UserId = user2FromDb.UserId,
+                    CardNumber = "4321432143214321",
+                    Cvv = "321",
+                    Expiry = new DateOnly(2028, 6, 15)
+                });
+                
+                ctx.ShipmentMethods.Add(new ShipmentMethod
+                {
+                    UserId = user3FromDb.UserId,
+                    AddressId = address1FromDb.AddressId,
+                    Method = "Pickup"
+                });
+                ctx.PaymentMethods.Add(new PaymentMethod
+                {
+                    UserId = user3FromDb.UserId,
+                    CardNumber = "5678567856785678",
+                    Cvv = "456",
+                    Expiry = new DateOnly(2029, 7, 10)
+                });
+                
+                ctx.SaveChanges();
             } 
             else
             {
@@ -97,6 +151,7 @@ public class Program
                     ShortDescription = "Standard QWERTY layout USB Keyboard",
                     FullDescription = "This Keyboard is a part of IotBay's Standard Office Equipment Range and has full USB capability, is compatible with Windows, MacOS and Linux"
                 });
+                
             }
             else
             {

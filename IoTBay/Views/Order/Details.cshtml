@@ -1,0 +1,18 @@
+@model IoTBay.Models.Entities.Order
+@{
+    ViewBag.Title = "Order Details";
+    Layout = "_Layout";
+}
+<h2>Order Details</h2>
+<div>
+    <strong>Order ID:</strong> @Model.OrderId<br />
+    <strong>User:</strong> @(Model.User?.Contact?.GivenName ?? "Anonymous/No Name")<br />
+    <strong>Products:</strong>
+    <ul>
+        @foreach (var op in Model.OrderProducts)
+        {
+            <li>@op.Product?.Name (x@op.Amount)</li>
+        }
+    </ul>
+</div>
+<a asp-action="Index">Back to List</a> 
