@@ -55,6 +55,8 @@ public class CatalogueController(ILogger<CatalogueController> logger, AppDbConte
         return View(viewModel);  // Just show the normal page, no filtering
     }
 
+    
+    
     // Apply filters if valid
     var query = allProducts.Where(p =>
         (string.IsNullOrEmpty(searchQuery) || p.Name.ToLower().Contains(searchQuery.ToLower())) &&
