@@ -31,7 +31,7 @@ machine and retrieve all the necessary library packages using NuGet. To get star
 project). If you are using JetBrains Rider, create a Docker Compose build configuration, add the `compose.yaml` and 
 `compose.dev.yaml` files. Leaving Fast Mode transformations enabled typically yields better build and startup times, and
 better debugger compatibility with Rider's built-in debugging tools. This configuration should allow you to add 
-breakpoints at any point, and perform hot reloads to the code to change things during runtime (this has limited support 
+breakpoints at any point, and perform hot reloads to the code during runtime (this has limited support 
 within ASP.NET Core).
 
 ## How It Works
@@ -40,16 +40,15 @@ database and application is handled by Docker, so the host machine does not need
 Server to get started, only Docker.
 
 The IoTBay application interfaces with the PostgreSQL database using a framework called EntityFramework Core, which is 
-an intelligent library and toolset which can generate all the boilerplate code necessary to model the database schema in 
+an advanced library and toolset that can generate all the boilerplate code necessary to model the database schema in 
 the project, which for this project is in the Models folder, and automatically generates the SQL queries sent to the database during runtime based on the interactions 
 with its DbContext instance. Any database-related model is in the Models/Entities folder, and any other type of model is
 typically stored somewhere else with an appropriately named folder. This database's schema-specific DbContext is the 
 AppDbContext class (Models/AppDbContext.cs).
 
-ASP.NET Core is the web server framework that the front end is built on, providing tools for rendering "Razor" pages, 
-which are written in CSHTML, a fusion of HTML and C#, that is then rendered on the server side into pure HTML before 
-being sent to the browser. ASP.NET Core allows the user to combine partial CSHTML views into one page, through powerful 
-templating and layout tooling.
+ASP.NET Core is a web server framework, providing tools for rendering "Razor" pages, which are written in CSHTML, a 
+fusion of HTML and C#, that is then rendered on the server side into pure HTML before being sent to the browser. ASP.NET
+Core allows the user to combine partial CSHTML views into one page, through powerful templating and layout tooling.
 
 In this project, a CSHTML page generally uses a View Model, which is a mostly pure data class (sometimes with validation
 logic), that gives the View (CSHTML page) a data structure to model itself around. This model can be instantiated and 
