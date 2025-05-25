@@ -23,10 +23,10 @@ ENTRYPOINT ["dotnet", "IoTBay.dll"]
 
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS dev
 ARG BUILD_CONFIGURATION=Debug
-WORKDIR /src
+WORKDIR /app
 COPY ["IoTBay.csproj", "."]
 RUN dotnet restore "IoTBay.csproj"
-COPY . .
-RUN dotnet build "./IoTBay.csproj" -c $BUILD_CONFIGURATION -o /app/build
+# COPY . .
+# RUN dotnet build "./IoTBay.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 CMD ["dotnet", "watch", "run", "--configuration", "Debug"]
