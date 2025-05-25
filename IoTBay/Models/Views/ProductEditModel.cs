@@ -37,7 +37,6 @@ public class ProductEditModel : IValidatableObject
             // Return a validation message for the Price field
             yield return new ValidationResult("Cannot have negative Stock", new[] { nameof(Stock) });
         }
-
-        // Add other custom validation logic as needed...
+        
     }
 }
