@@ -102,6 +102,7 @@ public class Program
                         Name = "Standard USB Keyboard",
                         Type = "Keyboard",
                         Price = 32.05,
+                        Stock = 50,
                         ShortDescription = "Standard QWERTY layout USB Keyboard",
                         FullDescription = "This Keyboard is part of IotBay's Standard Office Equipment Range, featuring USB connectivity and compatibility with Windows, MacOS, and Linux."
                     },
@@ -109,6 +110,7 @@ public class Program
                         Name = "Mechanical RGB Keyboard",
                         Type = "Keyboard",
                         Price = 89.99,
+                        Stock = 50,
                         ShortDescription = "RGB Mechanical Gaming Keyboard with Blue Switches",
                         FullDescription = "Perfect for gamers, with tactile mechanical switches, anti-ghosting keys, and customizable lighting."
                     },
@@ -116,6 +118,7 @@ public class Program
                         Name = "Wireless Bluetooth Keyboard",
                         Type = "Keyboard",
                         Price = 45.50,
+                        Stock = 50,
                         ShortDescription = "Slim wireless Bluetooth keyboard",
                         FullDescription = "Compatible with iOS, Android, and Windows, designed for portability and extended battery life."
                     },
@@ -123,6 +126,7 @@ public class Program
                         Name = "Ergonomic Split Keyboard",
                         Type = "Keyboard",
                         Price = 74.95,
+                        Stock = 50,
                         ShortDescription = "Ergonomic split design keyboard with wrist rest",
                         FullDescription = "Reduces wrist strain with a natural typing layout and soft wrist support."
                     },
@@ -130,6 +134,7 @@ public class Program
                         Name = "Compact 60% Keyboard",
                         Type = "Keyboard",
                         Price = 58.00,
+                        Stock = 50,
                         ShortDescription = "Portable 60% mechanical keyboard",
                         FullDescription = "A minimalist layout with mechanical keys and USB-C connection for portability and speed."
                     },
@@ -137,6 +142,7 @@ public class Program
                         Name = "Wireless Optical Mouse",
                         Type = "Mouse",
                         Price = 25.99,
+                        Stock = 50,
                         ShortDescription = "2.4GHz wireless mouse with ergonomic design",
                         FullDescription = "Comfortable and precise, includes a USB nano receiver and DPI adjustment."
                     },
@@ -144,6 +150,7 @@ public class Program
                         Name = "Gaming Mouse with RGB",
                         Type = "Mouse",
                         Price = 49.99,
+                        Stock = 50,
                         ShortDescription = "High-precision gaming mouse with RGB lighting",
                         FullDescription = "Designed for gamers with adjustable DPI, programmable buttons, and custom RGB effects."
                     },
@@ -151,6 +158,7 @@ public class Program
                         Name = "4K UHD Monitor 27\"",
                         Type = "Monitor",
                         Price = 299.99,
+                        Stock = 50,
                         ShortDescription = "27-inch Ultra HD display with HDMI and DisplayPort",
                         FullDescription = "Perfect for work and entertainment with vibrant colors, fast response, and ultra-high resolution."
                     },
@@ -158,6 +166,7 @@ public class Program
                         Name = "1080p Office Monitor 22\"",
                         Type = "Monitor",
                         Price = 119.99,
+                        Stock = 100,
                         ShortDescription = "Full HD LED monitor ideal for productivity",
                         FullDescription = "Reliable and affordable monitor for everyday tasks and clear visuals."
                     },
@@ -165,6 +174,7 @@ public class Program
                         Name = "USB-C Hub 7-in-1",
                         Type = "Peripheral",
                         Price = 34.95,
+                        Stock = 100,
                         ShortDescription = "Expand your laptop’s connectivity with USB-C hub",
                         FullDescription = "Features HDMI, USB 3.0, SD card reader, and more — essential for modern laptops."
                     },
@@ -172,6 +182,7 @@ public class Program
                         Name = "Noise-Cancelling Headset",
                         Type = "Headset",
                         Price = 79.99,
+                        Stock = 100,
                         ShortDescription = "Over-ear noise-canceling headset with mic",
                         FullDescription = "Ideal for calls, gaming, and music — immersive sound with comfortable fit."
                     },
@@ -179,6 +190,7 @@ public class Program
                         Name = "USB Conference Microphone",
                         Type = "Microphone",
                         Price = 54.90,
+                        Stock = 100,
                         ShortDescription = "Omnidirectional microphone for meetings",
                         FullDescription = "Plug-and-play USB mic with noise reduction, ideal for remote work and Zoom calls."
                     },
@@ -186,6 +198,7 @@ public class Program
                         Name = "Webcam 1080p HD",
                         Type = "Webcam",
                         Price = 39.99,
+                        Stock = 100,
                         ShortDescription = "HD webcam with built-in microphone",
                         FullDescription = "Delivers clear video and audio for streaming, video calls, and online meetings."
                     },
@@ -193,6 +206,7 @@ public class Program
                         Name = "Portable External SSD 1TB",
                         Type = "Storage",
                         Price = 119.99,
+                        Stock = 100,
                         ShortDescription = "Fast USB-C SSD with 1TB capacity",
                         FullDescription = "Lightweight and durable external drive with high-speed data transfer."
                     },
@@ -200,6 +214,7 @@ public class Program
                         Name = "Laser Printer Mono",
                         Type = "Printer",
                         Price = 149.00,
+                        Stock = 100,
                         ShortDescription = "High-speed monochrome laser printer",
                         FullDescription = "Efficient and low-cost printing for office environments, supports wireless printing."
                     },
@@ -207,6 +222,7 @@ public class Program
                         Name = "Wireless Charging Pad",
                         Type = "Accessory",
                         Price = 29.95,
+                        Stock = 100,
                         ShortDescription = "Qi-certified wireless charger for smartphones",
                         FullDescription = "Supports fast wireless charging for most major devices with a sleek, compact design."
                     },
@@ -214,6 +230,7 @@ public class Program
                         Name = "Mechanical Tenkeyless Keyboard",
                         Type = "Keyboard",
                         Price = 69.99,
+                        Stock = 100,
                         ShortDescription = "Compact TKL keyboard with brown switches",
                         FullDescription = "Offers mechanical precision without the number pad — great for desk space and portability."
                     },
@@ -221,6 +238,7 @@ public class Program
                         Name = "Keyboard Cleaning Kit",
                         Type = "Accessory",
                         Price = 14.99,
+                        Stock = 100,
                         ShortDescription = "Multi-tool set for cleaning mechanical keyboards",
                         FullDescription = "Includes keycap puller, brush, and cleaning solution for maintaining keyboard performance."
                     },
@@ -228,6 +246,7 @@ public class Program
                         Name = "Foldable Travel Keyboard",
                         Type = "Keyboard",
                         Price = 39.95,
+                        Stock = 100,
                         ShortDescription = "Portable foldable Bluetooth keyboard",
                         FullDescription = "Compact and foldable for easy transport, compatible with smartphones and tablets."
                     },
@@ -235,6 +254,7 @@ public class Program
                         Name = "Smart LED Desk Lamp",
                         Type = "Lighting",
                         Price = 44.99,
+                        Stock = 100,
                         ShortDescription = "LED lamp with touch control and USB charging",
                         FullDescription = "Modern desk lamp with adjustable brightness and built-in USB port for device charging."
                     }
@@ -246,6 +266,7 @@ public class Program
                     Name = "Keyboard4Order",
                     Type = "Keyboard",
                     Price = 32.05,
+                    Stock = 25,
                     ShortDescription = "Standard QWERTY layout USB Keyboard",
                     FullDescription =
                         "This Keyboard is a part of IotBay's Standard Office Equipment Range and has full USB capability, is compatible with Windows, MacOS and Linux"
