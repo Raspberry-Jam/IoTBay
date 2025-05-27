@@ -21,7 +21,7 @@ public class ProductAddModel : IValidatableObject
     [Required] public string? FullDescription { get; set; }
 
     [Display(Name = "Upload Product Image")]
-    public IFormFile ImageFile { get; set; }
+    public IFormFile? ImageFile { get; set; }
 
 
 

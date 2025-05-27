@@ -187,12 +187,12 @@ public class CatalogueController(ILogger<CatalogueController> logger, AppDbConte
         db.Products.Add(product);
         db.SaveChanges();
         
-        if (model.ImageFile.Length > 0)
+        if (model.ImageFile != null && model.ImageFile.Length > 0)
         {
             var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Photos");
             Directory.CreateDirectory(uploadsFolder); // Ensure folder exists
 
-            var fileExtension = Path.GetExtension(model.ImageFile.FileName); // e.g., .jpg or .png
+            var fileExtension = Path.GetExtension(model.ImageFile.FileName); // only jpg works atm
             var fileName = $"{product.ProductId}{fileExtension}";
             var filePath = Path.Combine(uploadsFolder, fileName);
 
